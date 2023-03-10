@@ -2,4 +2,4 @@
 
 set -xe
 
-python3 new_class.py $1;
+python3 run/new_class.py $1;

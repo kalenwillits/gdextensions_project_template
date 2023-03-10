@@ -4,7 +4,7 @@ entry_symbol = "library_init"
 
 [libraries]
 
-linux.64="res://bin/lib.linux.template_debug.x86_64"
+linux.64="res://bin/lib.linux.template_debug.x86_64.so"
 linux.64="res://bin/lib.linux.template_release.x86_64.so"
 
 windows.x86_64="res://bin/lib.windows.x86_64.dll"

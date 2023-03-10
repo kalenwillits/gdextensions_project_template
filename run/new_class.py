@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 def main():
     snake_case = args.classname
-    title_case = snake_case.replace("_", "").title().replace(" ", "")
+    title_case = snake_case.replace("_", " ").title().replace(" ", "")
     screaming_snake_case = snake_case.upper()
     TEMPLATE_HPP_CODE = f"""#ifndef APP_{screaming_snake_case}_HPP
 #define APP_{screaming_snake_case}_HPP
