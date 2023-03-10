@@ -38,7 +38,7 @@ not the current version you will need to checkout the 4.0 branch in godot-cpp*
 ```
 *This will take awhile the first time.*
 
-4. Open Godot and add a new node, if there is a "HelloWorld" node, it worked!
+4. Open Godot and import this project then add a new node. If there is a "HelloWorld" node option it worked!
 
 
 
