@@ -31,13 +31,12 @@ def get_extension_headers(path_string="src/"):
         else:
             is_cpp_header = filename[-4:].lower() == ".hpp"
             is_c_header = filename[-2:].lower() == ".h"
-            is_register_types = filename[:len("register_types")].lower() == "register_types"
             is_gdclass = False
             with open(path / filename) as srcfile:
                 if "GDCLASS" in srcfile.readline():
                     is_gdclass = True
 
-            if not is_register_types and is_gdclass:
+            if is_gdclass:
                 if is_cpp_header or is_c_header:
                     results.append(GodotExtension(filename, path / filename))
 
