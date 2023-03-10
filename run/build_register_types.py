@@ -52,8 +52,8 @@ def main():
         include_string += f"#include <{godot_extension.header}>" + "\n"
         register_class_string += "\t\t" + f"ClassDB::register_class<{godot_extension.classname}>();" + "\n"
 
-    REGISTER_TYPES_HPP = """#ifndef GDEXTENSION_REGISTER_TYPES_HPP
-#define GDEXTENSION_REGISTER_TYPES_HPP
+    REGISTER_TYPES_HPP = """#ifndef REGISTER_TYPES_HPP
+#define REGISTER_TYPES_HPP
 
 void initialize_module();
 void uninitialize_module();

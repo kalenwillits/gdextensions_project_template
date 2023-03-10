@@ -11,6 +11,7 @@ def main():
     snake_case = args.classname
     title_case = snake_case.replace("_", " ").title().replace(" ", "")
     screaming_snake_case = snake_case.upper()
+
     TEMPLATE_HPP_CODE = f"""#ifndef GDCLASS_{screaming_snake_case}_HPP
 #define GDCLASS_{screaming_snake_case}_HPP
 
