@@ -19,7 +19,7 @@ def parse_globs(dir_path):
     sources.append(Glob(f"{dir_path}*.cpp"))
     for filename in os.listdir(dir_path):
         if os.path.isdir(f"{dir_path}/{filename}"):
-            parse_globs(f"{dir_path}/{filename}/")
+            parse_globs(f"{dir_path}/{filename}")
 
 env.Append(CPPPATH=["src/"])
 
