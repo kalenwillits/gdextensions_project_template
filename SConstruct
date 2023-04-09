@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 import sys
-from pathlib import Path
 
 env = SConscript("godot-cpp/SConstruct")
 
@@ -19,7 +18,7 @@ env = SConscript("godot-cpp/SConstruct")
 def parse_globs(dir_path):
     sources.append(Glob(f"{dir_path}*.cpp"))
     for filename in os.listdir(dir_path):
-        if os.path.isdir(Path(dir_path / filename)):
+        if os.path.isdir(f"{dir_path}/{filename}"):
             parse_globs(f"{dir_path}/{filename}/")
 
 env.Append(CPPPATH=["src/"])
