@@ -4,28 +4,15 @@ import sys
 
 env = SConscript("godot-cpp/SConstruct")
 
-# For reference:
-# - CCFLAGS are compilation flags shared between C and C++
-# - CFLAGS are for C-specific compilation flags
-# - CXXFLAGS are for C++-specific compilation flags
-# - CPPFLAGS are for pre-processor flags
-# - CPPDEFINES are for pre-processor defines
-# - LINKFLAGS are for linking flags
-
-# tweak this if you want to use different folders, or more folders, to store your source code in.
-
-
-def parse_globs(dir_path, sources=[]):
-    sources.append(Glob(f"{dir_path}*.cpp"))
+def get_paths(dir_path, sources=set()):
+    sources.add(f"{dir_path}/")
     for filename in os.listdir(dir_path):
-        if os.path.isdir(f"{dir_path}{filename}"):
-            parse_globs(f"{dir_path}{filename}", sources=sources)
+        if os.path.isdir(f"{dir_path}/{filename}"):
+            sources |= (get_paths(f"{dir_path}/{filename}", sources=sources))
     return sources
 
-env.Append(CPPPATH=["src/"])
-
-sources = parse_globs("src/")
-
+env.Append(CPPPATH=list(get_paths("src")))
+sources = tuple([Glob(f"{path}*.cpp") for path in get_paths("src")])
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
@@ -39,4 +26,6 @@ else:
         "app/bin/lib{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
+
+Default(library)
 
