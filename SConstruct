@@ -15,16 +15,16 @@ env = SConscript("godot-cpp/SConstruct")
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 
 
-def parse_globs(dir_path):
+def parse_globs(dir_path, sources=[]):
     sources.append(Glob(f"{dir_path}*.cpp"))
     for filename in os.listdir(dir_path):
-        if os.path.isdir(f"{dir_path}/{filename}"):
-            parse_globs(f"{dir_path}/{filename}/")
+        if os.path.isdir(f"{dir_path}{filename}"):
+            parse_globs(f"{dir_path}{filename}", sources=sources)
+    return sources
 
 env.Append(CPPPATH=["src/"])
 
-sources = []
-parse_globs("src/")
+sources = parse_globs("src/")
 
 
 if env["platform"] == "macos":
@@ -40,4 +40,3 @@ else:
         source=sources,
     )
 
-Default(library)
