@@ -4,8 +4,10 @@ Pre-made project template to use C++ in the [Godot Game Engine](https://godoteng
 
 ### Environment
 Ubuntu 22.04.2
-Godot 4.0
+Godot 4.2
 Python 3.10
+Git 2.34.1
++ [SCons 4.6](https://pypi.org/project/SCons/)
 
 
 ### Usage 
@@ -22,9 +24,11 @@ cd gdextensions_project_template
 - clone the [godot-cpp](https://github.com/godotengine/godot-cpp/) repository:
 ```
 git clone https://github.com/godotengine/godot-cpp/
+cd godot-cpp
+git checkout 4.2
 ```
-*At the time of this writing, Godot 4.0 was just released. If version 4.0 is
-not the current version you will need to checkout the 4.0 branch in godot-cpp*
+*At the time of this writing, Godot 4.2 was just released. If version 4.2 is
+not the current version you will need to checkout the 4.2 branch in godot-cpp*
 
 - Create an example extension using the `new.sh` script:
 ```
@@ -45,4 +49,3 @@ not the current version you will need to checkout the 4.0 branch in godot-cpp*
 ### Sources:
 [Godot Game Engine](https://godotengine.org/)
 [godot-cpp](https://github.com/godotengine/godot-cpp/)
-
