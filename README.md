@@ -32,7 +32,7 @@ not the current version you will need to checkout the 4.2 branch in godot-cpp*
 
 - Create an example extension using the `new.sh` script:
 ```
-./run/new.sh hello_world
+./run/new-gdclass.sh hello_world
 ```
 *You must use snake case for your file name.*
 
