@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://cq37dn112bkbd"]
+
+[ext_resource type="Script" path="res://autoload/Console.gd" id="1_mspaq"]
+
+[node name="Console" type="CanvasLayer"]
+layer = 128
+script = ExtResource("1_mspaq")
+InputNodePath = NodePath("Margin/VBox/InputPrompt")
+LinesNodePath = NodePath("Margin/VBox/Lines")
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+alignment = 2
+
+[node name="Lines" type="VBoxContainer" parent="Margin/VBox"]
+layout_direction = 1
+layout_mode = 2
+alignment = 2
+
+[node name="InputPrompt" type="LineEdit" parent="Margin/VBox"]
+layout_mode = 2
+
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="text_submitted" from="Margin/VBox/InputPrompt" to="." method="_on_input_text_submitted"]
