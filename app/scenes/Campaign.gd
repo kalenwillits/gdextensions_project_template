@@ -1,6 +1,7 @@
 extends Node
+
 var data: Dictionary = {
-	"Start": {},
+	"Main": {},
 	"Actor": {},
 	"TileMap": {},
 	"Layer": {},
@@ -12,14 +13,18 @@ var data: Dictionary = {
 	"Deployment": {},
 	"Sprite": {},
 	"Animation": {},
+	"Resource": {},
 }
+
+func _ready() -> void:
+	System.link("load_campaign", load_campaign)
 
 func reset() -> void:
 	for key in data.keys():
 		data[key].clear()
 
-func get_Start() -> Dictionary:
-	return data.Start
+func get_Main() -> Dictionary:
+	return data.Main
 
 func get_Actor(objkey: String) -> Dictionary:
 	return data.get("Actor", {}).get(objkey, {})
@@ -44,7 +49,7 @@ func get_Zone(objkey: String) -> Dictionary:
 
 func get_Vector(objkey: String) -> Dictionary:
 	return data.get("Vector", {}).get(objkey, {})
-
+	
 func get_Deployment(objkey: String) -> Dictionary:
 	return data.get("Deployment", {}).get(objkey, {})
 
@@ -54,11 +59,14 @@ func get_Sprite(objkey: String) -> Dictionary:
 func get_Animation(objkey: String) -> Dictionary:
 	return data.get("Animation", {}).get(objkey, {})
 	
+func get_Resource(objkey: String) -> Dictionary:
+	return data.get("Resource", {}).get(objkey, {})
+	
 func add_obj(objdata: Dictionary) -> Result:
 	for objtype in objdata.keys():
 		if typeof(objdata[objtype]) == TYPE_DICTIONARY:
-			if objtype == "Start":
-				data["Start"] = objdata["Start"].duplicate()
+			if objtype == "Main":
+				data["Main"] = objdata["Main"].duplicate()
 			else:
 				for objkey in objdata[objtype].keys():
 					if typeof(objdata[objtype][objkey]) == TYPE_DICTIONARY:
@@ -68,3 +76,24 @@ func add_obj(objdata: Dictionary) -> Result:
 						else:
 							System.log("Unable to place object type [%s] from campaign. Typo in content creation?" % objtype)
 	return Result.ok(OK)
+	
+func load_campaign(kwargs: Dictionary) -> Result:
+	var campaign_name: String = kwargs.get("name")
+	var archive: ZIPReader = ZIPReader.new()
+	var campaign_path: String = io.get_dir() + Settings.CAMPAIGNS_DIR + campaign_name + ".zip"
+	if archive.open(campaign_path) == OK:	
+		var all_assets: Array = archive.get_files()
+		archive.close()
+		System.log("Loading [%s] assets from campaign [%s]..." % [all_assets.size(), campaign_path])
+		for key in all_assets:
+			if key.ends_with(".json"):
+				io\
+				.load_asset(campaign_name, key)\
+				.then(func(o): return add_obj(o))\
+				.catch(func(_o): System.log("Unable to load asset %s" % key))
+		return Result.ok(OK)
+	return Result.fail(FAILED)
+
+
+func _on_tree_exiting():
+	System.drop("load_campaign")

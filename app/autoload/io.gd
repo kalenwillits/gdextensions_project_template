@@ -40,33 +40,30 @@ func get_dir() -> String:
 	var path_arr = OS.get_executable_path().split("/")
 	return "/".join(path_arr.slice(0, -1)) + "/"
 
-func load_asset(key: String, flag: int = 0) -> Result:
+func load_asset(campaign_name: String, key: String, flag: int = 0) -> Result:
 	# TODO - 100% refactor the way tile maps are written
-	if Cache.campaign_name:
-		var archive := ZIPReader.new()
-		var err := archive.open(get_dir() + Settings.CAMPAIGNS_DIR + "/" + Cache.campaign_name + ".zip")
-		if err != OK:
-			return Result.fail("Asset failed to load " + Cache.campaign_name + " " + key)
-		var data = archive.read_file(key)
-
-		archive.close()
-		if key.to_lower().ends_with(".json"):
-			var json_result = parse_json(data.get_string_from_utf8())
-			if json_result != null:
-				return Result.ok(json_result)
-			else:
-				return Result.fail(FAILED)
-		elif key.to_lower().ends_with(".png"):
-			var img: Image = Image.new()
-			if flag:
-				img.convert(flag)
-			if img.load_png_from_buffer(data) == OK:
-				return Result.ok(ImageTexture.create_from_image(img))
-			else:
-				return Result.fail(FAILED)
+	var archive := ZIPReader.new()
+	var err := archive.open(get_dir() + Settings.CAMPAIGNS_DIR + "/" + campaign_name + ".zip")
+	if err != OK:
+		return Result.fail("Asset failed to load " + campaign_name + " " + key)
+	var data = archive.read_file(key)
+	archive.close()
+	if key.to_lower().ends_with(".json"):
+		var json_result = parse_json(data.get_string_from_utf8())
+		if json_result != null:
+			return Result.ok(json_result)
 		else:
-			return Result.ok(data.get_string_from_utf8())
-	return Result.fail("No campaign selected.")
+			return Result.fail(FAILED)
+	elif key.to_lower().ends_with(".png"):
+		var img: Image = Image.new()
+		if flag:
+			img.convert(flag)
+		if img.load_png_from_buffer(data) == OK:
+			return Result.ok(ImageTexture.create_from_image(img))
+		else:
+			return Result.fail(FAILED)
+	else:
+		return Result.ok(data.get_string_from_utf8())
 
 func load_file(path: String) -> Result:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)

@@ -22,6 +22,8 @@ Console="*res://autoload/Console.tscn"
 Settings="*res://autoload/Settings.gd"
 Cache="*res://autoload/Cache.gd"
 io="*res://autoload/io.gd"
+Scene="*res://autoload/Scene.gd"
+Route="*res://autoload/Route.gd"
 
 [input]
 

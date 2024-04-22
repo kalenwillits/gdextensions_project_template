@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://lnxxgkis65i0"]
+
+[ext_resource type="Script" path="res://scenes/Network.gd" id="1_pqflq"]
+
+[node name="Network" type="Node"]
+script = ExtResource("1_pqflq")
+
+[connection signal="connected_to_server" from="." to="." method="_on_connected_to_server"]
+[connection signal="connection_failed" from="." to="." method="_on_connection_failed"]
+[connection signal="peer_connected" from="." to="." method="_on_peer_connected"]
+[connection signal="peer_disconnected" from="." to="." method="_on_peer_disconnected"]
+[connection signal="server_disconnected" from="." to="." method="_on_server_disconnected"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]

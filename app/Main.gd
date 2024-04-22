@@ -2,7 +2,12 @@ extends Node
 
 func _ready():
 	System.link("exec_profile", exec_profile)
+	add_child(Scene.RoutingSystems.instantiate())
 	load_profile()
+	#Route.to(Scene.World)
+
+func _on_tree_exiting():
+	System.drop("exec_profile")
 
 func load_profile() -> void:
 	var args: Array = OS.get_cmdline_args()

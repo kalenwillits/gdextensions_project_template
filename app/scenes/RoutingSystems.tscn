@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://on3nea1juf3u"]
+
+[ext_resource type="Script" path="res://scenes/RoutingSystems.gd" id="1_rxvai"]
+
+[node name="RoutingSystems" type="Node"]
+script = ExtResource("1_rxvai")
+
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]

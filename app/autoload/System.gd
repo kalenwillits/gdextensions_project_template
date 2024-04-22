@@ -5,9 +5,11 @@ var functions: Dictionary = {}
 
 func link(funckey, function: Callable) -> void:
 	functions[funckey] = function
+	Console.link(funckey, function)
 
 func drop(funckey: String) -> void:
 	functions.erase(funckey)
+	Console.drop(funckey)
 	
 func invoke(funckey: String, kwargs: Dictionary):
 	if funckey in functions:

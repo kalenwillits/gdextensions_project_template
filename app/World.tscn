@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0wmbne7xlqrw"]
+
+[ext_resource type="Script" path="res://World.gd" id="1_p5x1l"]
+
+[node name="World" type="Node"]
+script = ExtResource("1_p5x1l")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Zone")
+
+[node name="Zone" type="Node2D" parent="."]

@@ -61,7 +61,7 @@ func exec(kwargs: Dictionary):
 		if command in functions.keys():
 			functions[command].call(kwargs)
 		elif command == "?":
-			functions["help"].call(kwargs)
+			cout(str(functions.keys()))
 		elif OS.is_debug_build():
 			push_error("No command [%s] linked to Console" % command)
 

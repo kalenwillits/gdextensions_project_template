@@ -1,7 +1,5 @@
 extends Node
 
-const RESPONSE_CODE: int = 782887
-
 const ISOMETRIC_RATIO: float = 2.0
 const NORTH_RADIANS: float = PI / 2.0
 
@@ -46,3 +44,7 @@ const TILEMAP_NODE_GROUP: String = "TileMap"
 
 const DEFAULT_HEADING: String = "S"
 const DESTINATION_PRECISION: float = 0.9999
+
+const DEFAULT_PORT: int = 5000
+const DEFAULT_ADDRESS: String = "127.0.0.1"
+const DEFAULT_MAX_NUM_CLIENTS: int = 128

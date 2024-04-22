@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2iyksvevfck3"]
+
+[sub_resource type="GDScript" id="GDScript_3jk68"]
+script/source = "extends Node
+
+func _ready():
+	System.link(\"start_server\", start_server)
+
+func _on_tree_exiting():
+	System.drop(\"start_server\")
+
+func start_server(kwargs: Dictionary) -> void:
+	pass
+"
+
+[node name="NetworkSystems" type="Node"]
+script = SubResource("GDScript_3jk68")
+
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
