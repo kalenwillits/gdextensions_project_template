@@ -6,3 +6,4 @@ var Network: PackedScene = preload("res://scenes/Network.tscn")
 
 var CampaignController: PackedScene = preload("res://scenes/CampaignController.tscn")
 var IsometricTileMap: PackedScene = preload("res://scenes/IsometricTileMap.tscn")
+var ArgParse: PackedScene = preload("res://scenes/ArgParse.tscn")

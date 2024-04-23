@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cd1cre2ug25u2"]
+
+[ext_resource type="Script" path="res://scenes/ArgParse.gd" id="1_83000"]
+
+[node name="ArgParse" type="Node"]
+script = ExtResource("1_83000")

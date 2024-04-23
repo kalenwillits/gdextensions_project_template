@@ -4,12 +4,6 @@ const ISOMETRIC_RATIO: float = 2.0
 const NORTH_RADIANS: float = PI / 2.0
 
 const CAMPAIGNS_DIR: String = "campaigns/"
-const INSTANCES_DIR: String = "instances/"
-const PROFILES_DIR: String = "profiles/"
-const LOGS_DIR: String = "logs/"
-
-const DEFAULT_PROFILE_NAME: String = "default"
-const DEFAULT_PROFILE: String = ""
 
 const KWARGS_DELIMITER: String = "="
 const HIDDEN_CHAR: String = "*"
@@ -46,5 +40,5 @@ const DEFAULT_HEADING: String = "S"
 const DESTINATION_PRECISION: float = 0.9999
 
 const DEFAULT_PORT: int = 5000
-const DEFAULT_ADDRESS: String = "127.0.0.1"
+const DEFAULT_URI: String = "127.0.0.1"
 const DEFAULT_MAX_NUM_CLIENTS: int = 128

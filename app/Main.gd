@@ -1,7 +1,7 @@
 extends Node
 
 func _ready():
-	cli_arg("--campaign").then(func(campaign_name): Cache.campaign = campaign_name)
+	add_child(Scene.ArgParse.instantiate())
 	Route.to(Scene.World)
 
 func cli_arg(arg: String) -> Result:
