@@ -10,10 +10,10 @@ func _on_tree_exiting():
 	
 	
 func start_server(kwargs: Dictionary) -> void:
-	establish_server(kwargs.get("address", Settings.DEFAULT_ADDRESS), int(kwargs.get("port", Settings.DEFAULT_PORT)))
+	establish_server(kwargs.get("uri", Settings.DEFAULT_URI), int(kwargs.get("port", Settings.DEFAULT_PORT)))
 	
 func start_client(kwargs: Dictionary) -> void:
-	establish_client(kwargs.get("address", Settings.DEFAULT_ADDRESS), int(kwargs.get("port", Settings.DEFAULT_PORT)))
+	establish_client(kwargs.get("uri", Settings.DEFAULT_URI), int(kwargs.get("port", Settings.DEFAULT_PORT)))
 
 # PROPERTIES -------------------------------------------------------------------------------------------------------- #
 
@@ -58,7 +58,7 @@ signal server_established
 signal client_established
 # ------------------------------------------------------------------------------------------------------------ SIGNALS #
 
-func establish_server(address: String = "*", port: int = 5000, max_clients: int = Settings.DEFAULT_MAX_NUM_CLIENTS):
+func establish_server(uri: String = "*", port: int = 5000, max_clients: int = Settings.DEFAULT_MAX_NUM_CLIENTS):
 	# 	Create server that listens to connections via port. The port needs to
 	# 	be an available, unused port between 0 and 65535. Note that ports below
 	# 	1024 are privileged and may require elevated permissions depending on
@@ -67,15 +67,15 @@ func establish_server(address: String = "*", port: int = 5000, max_clients: int 
 		Console.println("Failed to create server")
 	# The IP used when creating a server. This is set to the wildcard "*" by
 	# default, which binds to all available interface.
-	peer.set_bind_ip(address)
+	peer.set_bind_ip(uri)
 	multiplayer.set_multiplayer_peer(peer)
 	multiplayer.peer_connected.connect(func(peer_id): peer_connected.emit(peer_id))
 	multiplayer.peer_disconnected.connect(func(peer_id): peer_disconnected.emit(peer_id))
 	server_established.emit()
 
-func establish_client(address: String = "localhost", port: int = 5000):
-	# Create client that connects to a server at address using specified port.
-	if peer.create_client(address, port) != OK:
+func establish_client(uri: String = "localhost", port: int = 5000):
+	# Create client that connects to a server at uri using specified port.
+	if peer.create_client(uri, port) != OK:
 		Console.println("Failed to create client")
 	# The peer object to handle the RPC system (effectively enabling networking
 	# when set). 
