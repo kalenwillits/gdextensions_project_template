@@ -5,7 +5,6 @@ func _ready() -> void:
 	# Temporary hard-coded values
 	Cache.campaign = "base" # TODO delete
 	Cache.tilemap = "baseTileMap" # TODO delete
-	
 	var network = Scene.Network.instantiate()
 	var campaign_controller = Scene.CampaignController.instantiate()
 	network.connect("server_established", func(): campaign_controller.spawn_tilemap(Cache.campaign, Cache.tilemap))
