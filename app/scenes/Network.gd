@@ -52,6 +52,10 @@ signal connection_failed
 # peer. Clients get notified when other clients disconnect from the same
 # server.
 signal server_disconnected
+
+signal server_established
+
+signal client_established
 # ------------------------------------------------------------------------------------------------------------ SIGNALS #
 
 func establish_server(address: String = "*", port: int = 5000, max_clients: int = Settings.DEFAULT_MAX_NUM_CLIENTS):
@@ -61,30 +65,25 @@ func establish_server(address: String = "*", port: int = 5000, max_clients: int 
 	# 	the platform.
 	if peer.create_server(port, max_clients) != OK:
 		System.log("Failed to create server")
-
 	# The IP used when creating a server. This is set to the wildcard "*" by
 	# default, which binds to all available interface.
 	peer.set_bind_ip(address)
-	
 	multiplayer.set_multiplayer_peer(peer)
 	multiplayer.peer_connected.connect(func(peer_id): peer_connected.emit(peer_id))
 	multiplayer.peer_disconnected.connect(func(peer_id): peer_disconnected.emit(peer_id))
-	
+	server_established.emit()
 
 func establish_client(address: String = "localhost", port: int = 5000):
-
 	# Create client that connects to a server at address using specified port.
 	if peer.create_client(address, port) != OK:
 		System.log("Failed to create client")
-	
 	# The peer object to handle the RPC system (effectively enabling networking
 	# when set). 
 	multiplayer.set_multiplayer_peer(peer)
-	
 	multiplayer.connected_to_server.connect(func(): connected_to_server.emit())
 	multiplayer.connection_failed.connect(func(): connection_failed.emit())
 	multiplayer.server_disconnected.connect(func(): server_disconnected.emit())
-	
+	client_established.emit()
 	
 func unestablish():
 	multiplayer.set_multiplayer_peer(null)

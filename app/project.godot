@@ -25,6 +25,10 @@ io="*res://autoload/io.gd"
 Scene="*res://autoload/Scene.gd"
 Route="*res://autoload/Route.gd"
 
+[debug]
+
+gdscript/warnings/integer_division=0
+
 [input]
 
 toggle_developer_console={

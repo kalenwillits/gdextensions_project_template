@@ -1,30 +1,18 @@
 extends Node
 
 func _ready():
-	System.link("exec_profile", exec_profile)
+	#System.link("exec_profile", exec_profile)
 	add_child(Scene.RoutingSystems.instantiate())
-	load_profile()
-	#Route.to(Scene.World)
+	#load_profile()
+	Route.to(Scene.World)
+	cli_arg("--campaign").then(func(campaign_name): Cache.campaign = campaign_name)
 
 func _on_tree_exiting():
 	System.drop("exec_profile")
-
-func load_profile() -> void:
-	var args: Array = OS.get_cmdline_args()
-	var profile_name: String
-	if args.size() > 1:
-		profile_name = args[0]
-	else:
-		profile_name = Settings.DEFAULT_PROFILE_NAME		
-	var profile_file_path: String = io.get_dir() + Settings.PROFILES_DIR + profile_name
-	io.use_file(profile_file_path, Settings.DEFAULT_PROFILE)
-	io\
-	.load_file(profile_file_path)\
-	.then(func(data): System.invoke("exec_profile", {"profile": data}))
-	
-func exec_profile(kwargs: Dictionary) -> void:
-	var preprocessed_profile: Array = kwargs.get("profile", "")\
-	.replace(Settings.PROFILE_LINE_TERMINATOR, Settings.PROFILE_NEW_LINE_SEPERATOR)\
-	.split(Settings.PROFILE_NEW_LINE_SEPERATOR)
-	for line in preprocessed_profile:
-		Console.parse(line).then(func(args): Console.exec(args))
+		
+func cli_arg(arg: String) -> Result:
+	if OS.get_cmdline_args().has(arg):
+		var i = OS.get_cmdline_args().find(arg)
+		if OS.get_cmdline_args().size() > i + 1:
+			return Result.ok(OS.get_cmdline_args()[i + 1])
+	return Result.fail(FAILED)

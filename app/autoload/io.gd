@@ -40,12 +40,12 @@ func get_dir() -> String:
 	var path_arr = OS.get_executable_path().split("/")
 	return "/".join(path_arr.slice(0, -1)) + "/"
 
-func load_asset(campaign_name: String, key: String, flag: int = 0) -> Result:
+func load_asset(key: String, flag: int = 0) -> Result:
 	# TODO - 100% refactor the way tile maps are written
 	var archive := ZIPReader.new()
-	var err := archive.open(get_dir() + Settings.CAMPAIGNS_DIR + "/" + campaign_name + ".zip")
+	var err := archive.open(get_dir() + Settings.CAMPAIGNS_DIR + "/" + Cache.campaign + ".zip")
 	if err != OK:
-		return Result.fail("Asset failed to load " + campaign_name + " " + key)
+		return Result.fail("Asset failed to load " + Cache.campaign + " " + key)
 	var data = archive.read_file(key)
 	archive.close()
 	if key.to_lower().ends_with(".json"):

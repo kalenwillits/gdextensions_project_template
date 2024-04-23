@@ -1,13 +1,12 @@
 extends Node
 
-var campaign_name: String
-
-#var tilemap: String
+var campaign: String
+var tilemap: String
 
 #var actor_pk: int
-var username: String
+#var username: String
 
-var profile: String
+#var profile: String
 
 var textures: Dictionary  # Storage of already loaded textures
 #
@@ -17,10 +16,10 @@ var textures: Dictionary  # Storage of already loaded textures
 
 var camera_zoom: int = Settings.CAMERA_ZOOM_DEFAULT
 
-func reset() -> void:
-	campaign_name = ""
+#func reset() -> void:
+	#campaign_name = ""
 	#tilemap = ""
-	username = ""
+	#username = ""
 	#password = ""
 	#invite = ""
 	#instance = ""

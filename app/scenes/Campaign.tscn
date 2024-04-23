@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bxqh5es34w4pa"]
-
-[ext_resource type="Script" path="res://scenes/Campaign.gd" id="1_7147h"]
-
-[node name="Campaign" type="Node"]
-script = ExtResource("1_7147h")
-
-[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]

@@ -2,10 +2,9 @@
 
 [ext_resource type="Script" path="res://World.gd" id="1_p5x1l"]
 
-[node name="World" type="Node"]
+[node name="World" type="Node2D"]
 script = ExtResource("1_p5x1l")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-spawn_path = NodePath("../Zone")
-
-[node name="Zone" type="Node2D" parent="."]
+_spawnable_scenes = PackedStringArray("res://scenes/TileMapSeed.tscn")
+spawn_path = NodePath("..")

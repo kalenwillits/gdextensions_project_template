@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dso44ubxyjlbc"]
+
+[ext_resource type="Script" path="res://scenes/IsometricTileMap.gd" id="1_bql5m"]
+
+[node name="IsometricTileMap" type="TileMap"]
+format = 2
+script = ExtResource("1_bql5m")
