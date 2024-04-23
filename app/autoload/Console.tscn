@@ -27,5 +27,4 @@ alignment = 2
 [node name="InputPrompt" type="LineEdit" parent="Margin/VBox"]
 layout_mode = 2
 
-[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
 [connection signal="text_submitted" from="Margin/VBox/InputPrompt" to="." method="_on_input_text_submitted"]

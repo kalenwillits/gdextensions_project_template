@@ -19,8 +19,6 @@ var data: Dictionary = {
 
 func _ready() -> void:
 	add_to_group(name)
-	#System.link("load_campaign", func(_kwargs): load_campaign())
-	#Console.link("plant_tilemap_seed", func(kwargs): plant_tilemap_seed(kwargs["tilemap"]))
 
 func reset() -> void:
 	for key in data.keys():
@@ -77,7 +75,7 @@ func add_obj(objdata: Dictionary) -> Result:
 						if data.get(objtype) != null:
 							data[objtype][objkey] = objdata[objtype][objkey].duplicate()
 						else:
-							System.log("Unable to place object type [%s] from campaign. Typo in content creation?" % objtype)
+							Console.println("Unable to place object type [%s] from campaign. Typo in content creation?" % objtype)
 	return Result.ok(OK)
 	
 func load_campaign() -> Result:
@@ -86,13 +84,13 @@ func load_campaign() -> Result:
 	if archive.open(campaign_path) == OK:	
 		var all_assets: Array = archive.get_files()
 		archive.close()
-		System.log("Loading [%s] assets from campaign [%s]..." % [all_assets.size(), campaign_path])
+		Console.println("Loading [%s] assets from campaign [%s]..." % [all_assets.size(), campaign_path])
 		for key in all_assets:
 			if key.ends_with(".json"):
 				io\
 				.load_asset(key)\
 				.then(func(o): return add_obj(o))\
-				.catch(func(_o): System.log("Unable to load asset %s" % key))
+				.catch(func(_o): Console.println("Unable to load asset %s" % key))
 		return Result.ok(OK)
 	return Result.fail(FAILED)
 	
@@ -113,7 +111,3 @@ func spawn_tilemap(campaign: String, tilemap: String) -> void:
 	#seed.tilemap_key = "baseTileMap"
 	#seed.campaign_node_path = self.get_path()
 	#get_parent().add_child(seed)
-
-	
-func _on_tree_exiting():
-	System.drop("load_campaign")

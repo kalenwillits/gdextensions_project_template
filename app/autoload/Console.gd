@@ -42,7 +42,7 @@ func _process(_deleta: float):
 			InputPrompt.set_text("")
 
 
-func cout(line: String):
+func println(line: String):
 	outputs.append(line)
 	var new_line: Label = Label.new()
 	new_line.set_text(line)
@@ -61,7 +61,7 @@ func exec(kwargs: Dictionary):
 		if command in functions.keys():
 			functions[command].call(kwargs)
 		elif command == "?":
-			cout(str(functions.keys()))
+			println(str(functions.keys()))
 		elif OS.is_debug_build():
 			push_error("No command [%s] linked to Console" % command)
 
@@ -85,7 +85,3 @@ func parse(line: String) -> Result:
 func _on_input_text_submitted(line: String):
 	InputPrompt.set_text("")
 	parse(line).then(func(args): exec(args))
-
-func _on_tree_exiting():
-	if OS.is_debug_build():
-		System.invoke("save_logs", {})
