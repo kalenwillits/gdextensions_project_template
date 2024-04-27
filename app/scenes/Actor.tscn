@@ -1,8 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://dl6t8dqsvo35i"]
+[gd_scene load_steps=3 format=3 uid="uid://dl6t8dqsvo35i"]
 
 [ext_resource type="Script" path="res://scenes/Actor.gd" id="1_c0co2"]
 
-[node name="ActorReplica" type="CharacterBody2D"]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_bd4xq"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="Actor" type="CharacterBody2D"]
 y_sort_enabled = true
 collision_mask = 4
 script = ExtResource("1_c0co2")
@@ -23,6 +28,9 @@ one_shot = true
 
 [node name="HitBox" type="Area2D" parent="."]
 collision_layer = 2
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_bd4xq")
 
 [connection signal="heading_change" from="." to="." method="_on_heading_change"]
 [connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]

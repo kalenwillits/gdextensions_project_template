@@ -1,5 +1,4 @@
 extends CharacterBody2D
-class_name ActorReplica
 
 const SPEED_NORMAL: float = 700.0
 
@@ -12,7 +11,6 @@ var heading: String = Settings.DEFAULT_HEADING
 var state: String = "idle"
 var peer_id: int = 0
 var Campaign: Node
-var data: Dictionary = {}
 
 var _ticks: float = 0.0
 var _previous_heading: String
@@ -20,23 +18,33 @@ var _previous_heading: String
 signal on_touch(actor)
 signal heading_change(heading)
 
+func to_dict() -> Dictionary:
+	return {
+		"peer_id": peer_id,
+		"name": name
+	}
+	
+func _enter_tree():
+	set_multiplayer_authority(str(name).to_int())
+
 func _ready() -> void:
+	add_to_group(str(peer_id))
+	add_to_group(Settings.ACTOR_GROUP)
+	$Label.set_text(name) # TODO - Replace label with real name
 	Campaign = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	$Label.set_text(str(peer_id))  # TODO - Replace label with real name
 	$Sprite.set_sprite_frames(SpriteFrames.new())
-	add_to_group(name)
-	set_multiplayer_authority(peer_id)
+	call_deferred("_use_animate_polygons", heading)
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
-	call_deferred("_use_animate_polygons", heading)
+	
 	
 func _physics_process(delta) -> void:
 	use_state()
 	use_animation()
-	use_movement(delta)
-	#if is_multiplayer_authority():
-	click_to_move()
-	use_move_directly(delta)
+	if is_multiplayer_authority():
+		use_movement(delta)
+		click_to_move()
+		use_move_directly(delta)
 
 func click_to_move() -> void:
 	if Input.is_action_pressed("right_click"):
@@ -105,7 +113,7 @@ func set_speed_mod(value: float) -> void:
 	speed_mod = value
 
 func set_sprite(sprite_key: String) -> Result:
-	var sprite = Campaign.get_sprite(sprite_key).unwrap()
+	var sprite = Campaign.get_sprite(sprite_key).unwrap()  # TODO -> Create a sprite mapper/builder that pulls this out of campaign
 	var src = sprite.get("src")
 	if !Cache.textures.get(src):
 		io\
