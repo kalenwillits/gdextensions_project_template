@@ -1,6 +1,7 @@
 extends Node
 
 func _ready():
+	add_to_group(Settings.NETWORK_GROUP)
 	Console.link("server.start", start_server)
 	Console.link("client.start", start_client)
 	

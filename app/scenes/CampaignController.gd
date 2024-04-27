@@ -18,7 +18,7 @@ var data: Dictionary = {
 }
 
 func _ready() -> void:
-	add_to_group(name)
+	add_to_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
 
 func reset() -> void:
 	for key in data.keys():

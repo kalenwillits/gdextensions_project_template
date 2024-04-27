@@ -1,5 +1,16 @@
 extends Node
 
+enum RADIALS {
+	W,
+	NW,
+	N,
+	NE,
+	E,
+	SE,
+	S,
+	SW,
+}
+
 const ISOMETRIC_RATIO: float = 2.0
 const NORTH_RADIANS: float = PI / 2.0
 
@@ -30,7 +41,10 @@ const CAMERA_ZOOM_MAX: int = 11
 const CAMERA_MARGIN: int = 10
 const CAMERA_SPEED: float = 600.0
 const CAMERA_TOLERANCE: float  = 10.0
+const CAMERA_GROUP: String = "Camera"
 
+const CAMPAIGN_CONTROLLER_GROUP: String = "CampaignController"
+const NETWORK_GROUP: String = "Network"
 const WORLD_NODE_GROUP: String = "World"
 const ZONE_NODE_GROUP: String = "Zone%s"
 const ACTOR_NODE_GROUP: String = "Actor%s"
@@ -42,3 +56,5 @@ const DESTINATION_PRECISION: float = 0.9999
 const DEFAULT_PORT: int = 5000
 const DEFAULT_URI: String = "127.0.0.1"
 const DEFAULT_MAX_NUM_CLIENTS: int = 128
+
+const BASE_ACTOR_SPEED: float = 10.0

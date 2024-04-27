@@ -6,6 +6,7 @@ var _has_target: bool = false
 
 
 func _ready() -> void:
+	add_to_group(Settings.CAMERA_GROUP)
 	make_current()
 	zoom_update()
 
