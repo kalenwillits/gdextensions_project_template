@@ -2,15 +2,15 @@ extends CharacterBody2D
 
 const SPEED_NORMAL: float = 700.0
 
-var pk: int
-var zone_pk: int
+#var pk: int
+#var zone_pk: int
 var origin: Vector2
 var destination: Vector2
 var speed_mod: float = 1.0
 var heading: String = Settings.DEFAULT_HEADING 
 var state: String = "idle"
 var peer_id: int = 0
-var Campaign: Node
+var sprite_key: String
 
 var _ticks: float = 0.0
 var _previous_heading: String
@@ -31,12 +31,11 @@ func _ready() -> void:
 	add_to_group(str(peer_id))
 	add_to_group(Settings.ACTOR_GROUP)
 	$Label.set_text(name) # TODO - Replace label with real name
-	Campaign = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	$Sprite.set_sprite_frames(SpriteFrames.new())
+	$Sprite.set_sprite_frames(SpriteFrames.new())  # TODO  - Why?
+	build_sprite()
 	call_deferred("_use_animate_polygons", heading)
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
-	
 	
 func _physics_process(delta) -> void:
 	use_state()
@@ -92,13 +91,6 @@ func set_footprint(footprint_key) -> void:
 					#polygon.set_name("FootprintPolygon%s" % radial)
 					#add_child(polygon)
 			#)
-
-
-func set_pk(value: int) -> void:
-	pk = value
-	
-func set_zone_pk(value: int) -> void:
-	zone_pk = value
 	
 func set_peer_id(value) -> void:
 	if typeof(value) == TYPE_INT:
@@ -111,10 +103,28 @@ func set_heading(value: String) -> void:
 
 func set_speed_mod(value: float) -> void:
 	speed_mod = value
+	
+func set_sprite(value: String) -> void:
+	sprite_key = value
+	
+func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
+	var external_texture: Texture
+	var texture: AtlasTexture
+	if Cache.textures.has(source):
+		external_texture = Cache.textures[source]
+	else:
+		Cache.textures[source] = io.load_asset(source).unwrap_or_else(func(): push_error("Unable to load texture."))
+	var columns: int = external_texture.get_width() / size.x
+	texture = AtlasTexture.new()
+	texture.set_atlas(external_texture)
+	texture.set_region(std.get_region(index, columns, size))
+	return texture
 
-func set_sprite(sprite_key: String) -> Result:
-	var sprite = Campaign.get_sprite(sprite_key).unwrap()  # TODO -> Create a sprite mapper/builder that pulls this out of campaign
+func build_sprite() -> Result:
+	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
+	var sprite = campaign_controller.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
 	var src = sprite.get("src")
+	if src == null: return
 	if !Cache.textures.get(src):
 		io\
 		.load_asset(src)\
@@ -124,28 +134,27 @@ func set_sprite(sprite_key: String) -> Result:
 	var texture = Cache.textures.get(src)
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
 	if texture != null:
-		var animation: Dictionary = Campaign\
-		.get_animation(sprite.get("animation"))\
-		.unwrap_or(func(): return {})
+		var animation_key: String = sprite.get("animation")
+		var animation: Dictionary = campaign_controller.get_Animation(animation_key)
 		if animation.get("default") == null:
 			# Inject a default animation if one does not exist.
 			animation["default"] = {"_": [0]}
-		for animation_key in animation.keys():
-			if animation_key == "key":
-				continue
-			var columns: int = sprite.get("columns", 1)
-			for radial in animation[animation_key].keys():
-				var animation_name: String = "%s:%s" % [animation_key, radial]
-				if animation_name.contains("default"):
-					animation_name = "default"
+		for animation_name in animation.keys():
+			if animation_name == "key":
+				continue  ### TODO - Why? 
+			#var columns: int = sprite.get("columns", 1)
+			for radial in animation[animation_name].keys():
+				var animation_radial_name: String = "%s:%s" % [animation_name, radial]
+				if animation_radial_name.contains("default"):
+					animation_radial_name = "default"
 				else:
-					sprite_frames.add_animation(animation_name)
-				for frame in animation[animation_key][radial]:
+					sprite_frames.add_animation(animation_radial_name)
+				for frame in animation[animation_name][radial]:
 					sprite_frames.add_frame(
-						animation_name, 
-						std.build_frame(
+						animation_radial_name, 
+						build_frame(
 							frame, 
-							columns, 
+							#columns, 
 							std.vec2i_from(sprite.get("size")),
 							sprite.get("src", Settings.MISSING_VALUE),
 						)

@@ -1,6 +1,5 @@
 extends Node
 
-
 var data: Dictionary = {
 	"Main": {},
 	"Actor": {},
