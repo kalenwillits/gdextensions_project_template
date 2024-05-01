@@ -55,7 +55,10 @@ func build(CampaignController: Node) -> TileMap:  # TODO - we can now assume tha
 		if layer_data != null:
 			var layer_string: String = io.load_asset(layer_data.get("source")).unwrap()
 			tilemap.add_layer(layer_index)
-			tilemap.set_layer_y_sort_enabled(layer_index, layer_data.get("ysort", false))
+			var ysort: bool = layer_data.get("ysort", bool(layer_index)) # Usually, the ground layer is not sorted and the rgest of them are. 
+			tilemap.set_layer_y_sort_enabled(layer_index, layer_data.get("ysort", ysort))
+			if !ysort:
+				tilemap.set_layer_z_index(layer_index, layer_data.get("index", -1))
 			var coords: Vector2i = Vector2i()
 			
 			for row in layer_string.split("\n"):
