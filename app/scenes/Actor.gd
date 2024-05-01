@@ -2,13 +2,11 @@ extends CharacterBody2D
 
 const SPEED_NORMAL: float = 700.0
 
-#var pk: int
-#var zone_pk: int
-var origin: Vector2
-var destination: Vector2
-var speed_mod: float = 1.0
-var heading: String = Settings.DEFAULT_HEADING 
-var state: String = "idle"
+@export var origin: Vector2
+@export var destination: Vector2
+@export var speed_mod: float = 1.0
+@export var heading: String = Settings.DEFAULT_HEADING 
+@export var state: String = "idle"
 var peer_id: int = 0
 var sprite_key: String
 
