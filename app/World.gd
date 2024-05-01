@@ -25,7 +25,7 @@ func use_server_established() -> void:
 
 func use_client_established() -> void:
 	pass
-	
+
 func use_peer_connected(peer_id: int) -> void:
 	campaign_controller.rpc_id(peer_id, "spawn_tilemap", Cache.campaign, Cache.tilemap)
 	spawn_actor({"peer_id": peer_id, "sprite": "baseSprite"})
@@ -33,5 +33,6 @@ func use_peer_connected(peer_id: int) -> void:
 func spawn_actor(data: Dictionary) -> void:
 	var actor = Scene.Actor.instantiate()
 	actor.set_name(str(data["peer_id"]))
-	actor.set_sprite(data["sprite"])
+	actor.sprite = data["sprite"]
 	add_child(actor)
+	actor.rpc.call("build_sprite", actor.sprite)

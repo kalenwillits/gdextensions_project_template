@@ -7,11 +7,12 @@ const SPEED_NORMAL: float = 700.0
 @export var speed_mod: float = 1.0
 @export var heading: String = Settings.DEFAULT_HEADING 
 @export var state: String = "idle"
-var peer_id: int = 0
-var sprite_key: String
+@export var sprite: String
 
+var peer_id: int = 0
 var _ticks: float = 0.0
 var _previous_heading: String
+var _previous_sprite: String
 
 signal on_touch(actor)
 signal heading_change(heading)
@@ -29,8 +30,7 @@ func _ready() -> void:
 	add_to_group(str(peer_id))
 	add_to_group(Settings.ACTOR_GROUP)
 	$Label.set_text(name) # TODO - Replace label with real name
-	$Sprite.set_sprite_frames(SpriteFrames.new())  # TODO  - Why?
-	build_sprite()
+	$Sprite.set_sprite_frames(SpriteFrames.new())
 	call_deferred("_use_animate_polygons", heading)
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
@@ -102,9 +102,9 @@ func set_heading(value: String) -> void:
 func set_speed_mod(value: float) -> void:
 	speed_mod = value
 	
-func set_sprite(value: String) -> void:
-	sprite_key = value
-	
+#func set_sprite(value: String) -> void:
+	#sprite_key = value
+	#
 func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	var external_texture: Texture
 	var texture: AtlasTexture
@@ -118,10 +118,11 @@ func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	texture.set_region(std.get_region(index, columns, size))
 	return texture
 
-func build_sprite() -> Result:
+@rpc("any_peer", "call_local", "reliable")
+func build_sprite(sprite_key: String) -> Result:
 	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	var sprite = campaign_controller.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
-	var src = sprite.get("src")
+	var sprite_data = campaign_controller.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
+	var src = sprite_data.get("src")
 	if src == null: return
 	if !Cache.textures.get(src):
 		io\
@@ -132,7 +133,7 @@ func build_sprite() -> Result:
 	var texture = Cache.textures.get(src)
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
 	if texture != null:
-		var animation_key: String = sprite.get("animation")
+		var animation_key: String = sprite_data.get("animation")
 		var animation: Dictionary = campaign_controller.get_Animation(animation_key)
 		if animation.get("default") == null:
 			# Inject a default animation if one does not exist.
@@ -153,19 +154,19 @@ func build_sprite() -> Result:
 						build_frame(
 							frame, 
 							#columns, 
-							std.vec2i_from(sprite.get("size")),
-							sprite.get("src", Settings.MISSING_VALUE),
+							std.vec2i_from(sprite_data.get("size")),
+							sprite_data.get("src", Settings.MISSING_VALUE),
 						)
 					);
-		$Sprite.offset = _calculate_sprite_offset(sprite)
+		$Sprite.offset = _calculate_sprite_offset(sprite_data)
 		$Sprite.set_sprite_frames(sprite_frames)
 		$Sprite.set_animation("default")
 		$Sprite.play()
 	return Result.ok(OK)
 	
-func _calculate_sprite_offset(sprite) -> Vector2i:
-	var full_size: Vector2i = std.vec2i_from(sprite.get("size"))
-	var margin: Vector2i = std.vec2i_from(sprite.get("margin"))
+func _calculate_sprite_offset(sprite_data: Dictionary) -> Vector2i:
+	var full_size: Vector2i = std.vec2i_from(sprite_data.get("size"))
+	var margin: Vector2i = std.vec2i_from(sprite_data.get("margin"))
 	var actual_size: Vector2i = full_size - margin
 	var result: Vector2i = -actual_size
 	result.x += ((full_size.x / 2) - (margin.x))
@@ -303,3 +304,9 @@ func set_polygons(disabled: bool) -> void:
 	for node in $HitBox.get_children():
 		if node.is_class("CollisionPolygon2D"):
 			node.disabled = disabled
+
+
+func _on_multiplayer_synchronizer_synchronized():
+	if _previous_sprite != sprite:
+		_previous_sprite = sprite
+		build_sprite(sprite)
