@@ -41,13 +41,11 @@ func build(CampaignController: Node) -> TileMap:  # TODO - we can now assume tha
 			if polygon_key != null:
 				var polygon: Dictionary = CampaignController.get_Polygon(polygon_key)
 				if polygon != null:
-					var verticies: Array = []
-					if polygon.keys().size() > 0:
-						if "default" in polygon.keys():
-							verticies = polygon["polygon"].map(vec2_from)
-						else:
-							verticies = polygon.values()[0].map(vec2_from)
-					atlas_tile.set("physics_layer_0/polygon_0/points", verticies)
+					var vectors: PackedVector2Array = []
+					for vertex_key in polygon.get("vertices", []):
+						var vertex = CampaignController.get_Vertex(vertex_key)
+						vectors.append(std.vec2i_from(vertex))
+					atlas_tile.set("physics_layer_0/polygon_0/points", vectors)
 		tilemap.tile_set = tileset
 	var layer_index: int = 0
 	for layer_key in map_data.get("layers", []):
