@@ -9,11 +9,11 @@ var data: Dictionary = {
 	"Tile": {},
 	"Polygon": {},
 	"Zone": {},
-	"Vector": {},
+	"Vertex": {},
 	"Deployment": {},
 	"Sprite": {},
 	"Animation": {},
-	"Resource": {},
+	"Resource": {}
 }
 
 func _ready() -> void:
@@ -47,8 +47,8 @@ func get_Polygon(objkey: String) -> Dictionary:
 func get_Zone(objkey: String) -> Dictionary:
 	return data.get("Zone", {}).get(objkey, {})
 
-func get_Vector(objkey: String) -> Dictionary:
-	return data.get("Vector", {}).get(objkey, {})
+func get_Vertex(objkey: String) -> Dictionary:
+	return data.get("Vertex", {}).get(objkey, {})
 	
 func get_Deployment(objkey: String) -> Dictionary:
 	return data.get("Deployment", {}).get(objkey, {})
@@ -65,12 +65,11 @@ func get_Resource(objkey: String) -> Dictionary:
 func add_obj(objdata: Dictionary) -> Result:
 	for objtype in objdata.keys():
 		if typeof(objdata[objtype]) == TYPE_DICTIONARY:
-			if objtype == "Start":
-				data["Start"] = objdata["Start"].duplicate()
+			if objtype == "Main":
+				data["Main"] = objdata["Main"].duplicate()
 			else:
 				for objkey in objdata[objtype].keys():
 					if typeof(objdata[objtype][objkey]) == TYPE_DICTIONARY:
-						objdata[objtype][objkey]["key"] = objkey
 						if data.get(objtype) != null:
 							data[objtype][objkey] = objdata[objtype][objkey].duplicate()
 						else:

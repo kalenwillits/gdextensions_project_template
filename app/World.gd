@@ -4,6 +4,10 @@ extends Node2D
 @onready var campaign_controller = Scene.CampaignController.instantiate()
 @onready var camera = Scene.Camera.instantiate()
 
+
+# TODO - delete this
+func mockActor(peer_id): return {"peer_id": peer_id, "sprite": "baseSprite", "footprint": "baseFootprint"}
+
 func _ready() -> void:
 	# Temporary hard-coded values
 	Cache.campaign = "base" # TODO delete
@@ -21,18 +25,19 @@ func _ready() -> void:
 
 func use_server_established() -> void:
 	campaign_controller.spawn_tilemap(Cache.campaign, Cache.tilemap)
-	spawn_actor({"peer_id": network.multiplayer.get_unique_id(), "sprite": "baseSprite"})
+	spawn_actor(mockActor(network.multiplayer.get_unique_id()))
 
 func use_client_established() -> void:
 	pass
 
 func use_peer_connected(peer_id: int) -> void:
 	campaign_controller.rpc_id(peer_id, "spawn_tilemap", Cache.campaign, Cache.tilemap)
-	spawn_actor({"peer_id": peer_id, "sprite": "baseSprite"})
+	spawn_actor(mockActor(peer_id))
 
 func spawn_actor(data: Dictionary) -> void:
 	var actor = Scene.Actor.instantiate()
 	actor.set_name(str(data["peer_id"]))
-	actor.sprite = data["sprite"]
+	actor.set_sprite(data["sprite"])
+	actor.set_footprint(data["footprint"])
 	add_child(actor)
 	actor.rpc.call("build_sprite", actor.sprite)

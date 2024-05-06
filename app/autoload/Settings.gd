@@ -58,3 +58,8 @@ const DEFAULT_URI: String = "127.0.0.1"
 const DEFAULT_MAX_NUM_CLIENTS: int = 128
 
 const BASE_ACTOR_SPEED: float = 10.0
+
+const DEFAULT_SPRITE_SIZE_X: int = 64
+const DEFAULT_SPRITE_SIZE_Y: int = 64
+const DEFAULT_SPRITE_MARGIN_X: int = 16
+const DEFAULT_SPRITE_MARGIN_Y: int = 16

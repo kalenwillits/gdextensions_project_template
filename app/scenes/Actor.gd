@@ -8,6 +8,7 @@ const SPEED_NORMAL: float = 700.0
 @export var heading: String = Settings.DEFAULT_HEADING 
 @export var state: String = "idle"
 @export var sprite: String
+@export var footprint: String
 
 var peer_id: int = 0
 var _ticks: float = 0.0
@@ -31,9 +32,9 @@ func _ready() -> void:
 	add_to_group(Settings.ACTOR_GROUP)
 	$Label.set_text(name) # TODO - Replace label with real name
 	$Sprite.set_sprite_frames(SpriteFrames.new())
-	call_deferred("_use_animate_polygons", heading)
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
+	build_footprint()
 	
 func _physics_process(delta) -> void:
 	use_state()
@@ -70,26 +71,33 @@ func set_on_touch(action_name) -> void:
 						## TODO - Impliment step function for a "next/step/then" parameter
 				#return OK
 		#).catch(func(err): push_error(err, action_name))
-	
 
-	
-func set_footprint(footprint_key) -> void:
-	pass # TODO
-	#Campaign.get_polygon(footprint_key)\
-	#.then(
-		#func(footprint):
-			#for node in get_children().filter(func(node): return node.is_class("CollisionPolygon2D")):
-				#node.queue_free()
-			#for radial in footprint.keys():
-				#if radial == "key":
-					#continue
-				#if typeof(footprint[radial]) == TYPE_ARRAY:
-					#var polygon: CollisionPolygon2D = CollisionPolygon2D.new()
-					#polygon.set_polygon(footprint[radial].map(std.vec2_from))
-					#polygon.set_name("FootprintPolygon%s" % radial)
-					#add_child(polygon)
-			#)
-	
+func clear_footprint():
+	for node in get_children().filter(func(node): return node.is_class("CollisionPolygon2D")):
+		node.queue_free()
+		
+
+func set_footprint(value: String) -> void:
+	footprint = value
+
+func build_footprint() -> void:
+	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
+	var footprint_data = campaign_controller.get_Polygon(footprint)
+	var polygon: CollisionPolygon2D = CollisionPolygon2D.new()
+	var vector_array: PackedVector2Array = []
+	for vertex_key in footprint_data.get("vertices", []):
+		var vertex: Dictionary = campaign_controller.get_Vertex(vertex_key)
+		vector_array.append(Vector2i(vertex.get("x"), vertex.get("y")))
+	polygon.set_polygon(vector_array)
+	var polygon_name: String = "FootprintPolygon"
+	var existing_polygon = get_node_or_null(polygon_name)
+	if existing_polygon != null:
+		existing_polygon.queue_free()
+		remove_child(existing_polygon)
+	polygon.set_name(polygon_name)
+	add_child(polygon)
+
+
 func set_peer_id(value) -> void:
 	if typeof(value) == TYPE_INT:
 		peer_id = value
@@ -102,9 +110,9 @@ func set_heading(value: String) -> void:
 func set_speed_mod(value: float) -> void:
 	speed_mod = value
 	
-#func set_sprite(value: String) -> void:
-	#sprite_key = value
-	#
+func set_sprite(value: String) -> void:
+	sprite = value
+	
 func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	var external_texture: Texture
 	var texture: AtlasTexture
@@ -117,6 +125,31 @@ func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	texture.set_atlas(external_texture)
 	texture.set_region(std.get_region(index, columns, size))
 	return texture
+	
+	
+func get_sprite_size(sprite_data: Dictionary) -> Vector2i:
+	var sprite_size_x: int = Settings.DEFAULT_SPRITE_SIZE_X
+	var sprite_size_y: int = Settings.DEFAULT_SPRITE_SIZE_Y
+	if sprite_data.get("size") != null:
+		var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
+		var sprite_size_vertex = campaign_controller.get_Vertex(sprite_data["size"])
+		if sprite_size_vertex.get("x") != null:
+			sprite_size_x = sprite_size_vertex["x"]
+		if sprite_size_vertex.get("y") != null:
+			sprite_size_y = sprite_size_vertex["y"]
+	return Vector2i(sprite_size_x, sprite_size_y)
+	
+func get_sprite_margin(sprite_data: Dictionary) -> Vector2i:
+	var sprite_margin_x: int = Settings.DEFAULT_SPRITE_MARGIN_X
+	var sprite_margin_y: int = Settings.DEFAULT_SPRITE_MARGIN_Y
+	if sprite_data.get("margin") != null:
+		var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
+		var sprite_margin_vertex = campaign_controller.get_Vertex(sprite_data["margin"])
+		if sprite_margin_vertex.get("x") != null:
+			sprite_margin_x = sprite_margin_vertex["x"]
+		if sprite_margin_vertex.get("y") != null:
+			sprite_margin_y = sprite_margin_vertex["y"]
+	return Vector2i(sprite_margin_x, sprite_margin_y)
 
 @rpc("any_peer", "call_local", "reliable")
 func build_sprite(sprite_key: String) -> Result:
@@ -135,26 +168,19 @@ func build_sprite(sprite_key: String) -> Result:
 	if texture != null:
 		var animation_key: String = sprite_data.get("animation")
 		var animation: Dictionary = campaign_controller.get_Animation(animation_key)
-		if animation.get("default") == null:
-			# Inject a default animation if one does not exist.
-			animation["default"] = {"_": [0]}
 		for animation_name in animation.keys():
-			if animation_name == "key":
-				continue  ### TODO - Why? 
-			#var columns: int = sprite.get("columns", 1)
 			for radial in animation[animation_name].keys():
 				var animation_radial_name: String = "%s:%s" % [animation_name, radial]
 				if animation_radial_name.contains("default"):
-					animation_radial_name = "default"
+					animation_radial_name = "default"  ## TODO WTF is this and why?
 				else:
 					sprite_frames.add_animation(animation_radial_name)
 				for frame in animation[animation_name][radial]:
 					sprite_frames.add_frame(
 						animation_radial_name, 
 						build_frame(
-							frame, 
-							#columns, 
-							std.vec2i_from(sprite_data.get("size")),
+							frame,
+							get_sprite_size(sprite_data),
 							sprite_data.get("src", Settings.MISSING_VALUE),
 						)
 					);
@@ -165,8 +191,8 @@ func build_sprite(sprite_key: String) -> Result:
 	return Result.ok(OK)
 	
 func _calculate_sprite_offset(sprite_data: Dictionary) -> Vector2i:
-	var full_size: Vector2i = std.vec2i_from(sprite_data.get("size"))
-	var margin: Vector2i = std.vec2i_from(sprite_data.get("margin"))
+	var full_size: Vector2i = get_sprite_size(sprite_data)
+	var margin: Vector2i = get_sprite_margin(sprite_data)
 	var actual_size: Vector2i = full_size - margin
 	var result: Vector2i = -actual_size
 	result.x += ((full_size.x / 2) - (margin.x))
@@ -245,39 +271,7 @@ func use_state() -> void:
 		"run": 
 			if position.is_equal_approx(destination):
 				set_state("idle")
-			
 		
-func _use_animate_polygons(radial: String) -> void:
-	var updated_active_footprint: bool = false
-	var updated_active_hitbox: bool = false
-	for node in get_children().filter(func(node): return node.is_class("CollisionPolygon2D")):
-		if node.name.ends_with(radial):
-			node.disabled = false
-			updated_active_footprint = true
-
-		else:
-			node.disabled = true
-			
-	for node in $HitBox.get_children().filter(func(node): return node.is_class("CollisionPolygon2D")):
-		if node.name.ends_with(heading):
-			node.disabled = false
-			node.visible = true
-			updated_active_hitbox = true
-
-		else:
-			node.disabled = true
-			node.visible = false
-			
-	if !updated_active_footprint:
-		var footprint_polygon_default = get_node_or_null("FootprintPolygondefault")
-		if footprint_polygon_default:
-			footprint_polygon_default.disabled = false
-			footprint_polygon_default.visible = true
-	if !updated_active_hitbox:
-		var hitbox_polygon_default = $HitBox.get_node_or_null("HitBoxPolygondefault")
-		if hitbox_polygon_default:
-			hitbox_polygon_default.disabled = false
-			hitbox_polygon_default.visible = true
 
 func _on_sprite_animation_finished() -> void:
 	match state:
@@ -289,7 +283,7 @@ func _on_sprite_animation_finished() -> void:
 
 
 func _on_heading_change(radial):
-	_use_animate_polygons(radial)
+	pass
 
 
 func _on_hit_box_body_entered(actor):
