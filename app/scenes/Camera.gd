@@ -3,6 +3,7 @@ extends Camera2D
 
 var _target: WeakRef
 var _has_target: bool = false
+var _lock: bool = false
 
 
 func _ready() -> void:
@@ -42,9 +43,10 @@ func use_margin_panning(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	handle_focus_events(delta)
 	handle_zoom_events()
+	handle_camera_lock()
 
 func handle_focus_events(delta: float) -> void:
-	if _has_target:
+	if _has_target and _lock:
 		use_sync_to_target()
 	else:
 		use_margin_panning(delta)
@@ -57,6 +59,12 @@ func handle_zoom_events() -> void:
 
 func use_sync_to_target() -> void:
 	get_target().then(func(target): snap_to(target.position))
+	
+func handle_camera_lock() -> void:
+	if Input.is_action_just_pressed("camera_lock"):
+		_lock = true
+	if Input.is_action_just_released("camera_lock"):
+		_lock = false
 
 
 func zoom_in() -> void:
