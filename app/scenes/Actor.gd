@@ -35,6 +35,7 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
 	build_footprint()
+	$Sprite.play.call_deferred() # This must be deferred or it won't play animations
 	
 func _physics_process(delta) -> void:
 	use_state()
@@ -187,7 +188,6 @@ func build_sprite(sprite_key: String) -> Result:
 		$Sprite.offset = _calculate_sprite_offset(sprite_data)
 		$Sprite.set_sprite_frames(sprite_frames)
 		$Sprite.set_animation("default")
-		$Sprite.play()
 	return Result.ok(OK)
 	
 func _calculate_sprite_offset(sprite_data: Dictionary) -> Vector2i:
