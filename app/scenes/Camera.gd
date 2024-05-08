@@ -3,7 +3,7 @@ extends Camera2D
 
 var _target: WeakRef
 var _has_target: bool = false
-var _lock: bool = false
+var _lock: bool = true
 
 
 func _ready() -> void:
@@ -62,9 +62,7 @@ func use_sync_to_target() -> void:
 	
 func handle_camera_lock() -> void:
 	if Input.is_action_just_pressed("camera_lock"):
-		_lock = true
-	if Input.is_action_just_released("camera_lock"):
-		_lock = false
+		_lock = !_lock
 
 
 func zoom_in() -> void:
