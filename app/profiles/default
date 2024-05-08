@@ -1,3 +1,5 @@
 {
-
+	"actor": "baseActor",
+	"name": "default",
+	"scene": "baseScene"
 }

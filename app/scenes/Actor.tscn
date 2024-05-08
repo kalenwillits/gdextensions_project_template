@@ -24,10 +24,12 @@ properties/5/replication_mode = 2
 properties/6/path = NodePath(".:sprite")
 properties/6/spawn = true
 properties/6/replication_mode = 2
+properties/7/path = NodePath(".:polygon")
+properties/7/spawn = true
+properties/7/replication_mode = 2
 
 [node name="Actor" type="CharacterBody2D"]
 y_sort_enabled = true
-collision_mask = 4
 script = ExtResource("1_c0co2")
 
 [node name="Actions" type="Node" parent="."]
@@ -51,6 +53,7 @@ collision_layer = 2
 replication_config = SubResource("SceneReplicationConfig_bd4xq")
 
 [connection signal="heading_change" from="." to="." method="_on_heading_change"]
+[connection signal="animation_changed" from="Sprite" to="." method="_on_sprite_animation_changed"]
 [connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]
 [connection signal="ready" from="Sprite" to="." method="_on_sprite_ready"]
 [connection signal="ready" from="Label" to="." method="_on_label_ready"]

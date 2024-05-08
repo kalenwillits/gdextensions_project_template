@@ -5,7 +5,7 @@ var _actor: String
 var _name: String
 
 func _ready() -> void:
-	load_or_create_new.call_deferred(Cache.profile)
+	load_or_create_new(Cache.profile)
 
 func _on_tree_exited():
 	save()
@@ -15,33 +15,39 @@ func load_or_create_new(profile_name: String):
 	var profile_path: String = Settings.PROFILES_DIR + profile_name
 	var profile: Dictionary
 	if FileAccess.file_exists(profile_path):
-		io.load_json(profile_path).then(func(data): profile = data)
+		profile = io.load_json(profile_path).unwrap()
 	else:
 		profile = _generate_default_profile(profile_name)
 		io.save_json(profile_path, profile)
+	from_dict(profile)
 	return profile
 	
 func save() -> void:
-	pass # TODO
+	io.save_json(Settings.PROFILES_DIR + Cache.profile, to_dict())
 
 func _generate_default_profile(profile_name: String) -> Dictionary:
 	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
 	var maindata: Dictionary = campaign_controller.get_Main()
-	var new_profile: Dictionary = {}
-	_scene = maindata["scene"]
-	_actor = maindata["actor"]
-	_name = profile_name
-	return new_profile
+	return {
+		"actor": maindata["actor"],
+		"scene": maindata["scene"],
+		"name": profile_name,
+	}
+
 	
-func _from_actor(actor: Node):
+func from_actor(actor: Node):
 	pass # TODO
 	
-func _to_dict() -> Dictionary:
+func to_dict() -> Dictionary:
 	return {
 		"scene": _scene,
 		"actor": _actor,
 		"name": _name
 	}
-
+	
+func from_dict(data: Dictionary) -> void:
+	_scene = data["scene"]
+	_actor = data["actor"]
+	_name = data["name"]
 
 

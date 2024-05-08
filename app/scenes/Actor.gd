@@ -8,15 +8,17 @@ const SPEED_NORMAL: float = 700.0
 @export var heading: String = Settings.DEFAULT_HEADING 
 @export var state: String = "idle"
 @export var sprite: String
-@export var footprint: String
+@export var polygon: String
 
 var peer_id: int = 0
 var _ticks: float = 0.0
 var _previous_heading: String
 var _previous_sprite: String
+var _previous_polygon: String
 
 signal on_touch(actor)
 signal heading_change(heading)
+signal on_sprite_configured
 
 func to_dict() -> Dictionary:
 	return {
@@ -27,15 +29,17 @@ func to_dict() -> Dictionary:
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
 
+
 func _ready() -> void:
 	add_to_group(str(peer_id))
 	add_to_group(Settings.ACTOR_GROUP)
+
 	$Label.set_text(name) # TODO - Replace label with real name
 	$Sprite.set_sprite_frames(SpriteFrames.new())
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
-	build_footprint()
-	$Sprite.play.call_deferred() # This must be deferred or it won't play animations
+	get_tree().create_timer(0.01).timeout.connect(func(): build_polygon(polygon))
+	get_tree().create_timer(0.01).timeout.connect(func(): build_sprite(sprite))
 	
 func _physics_process(delta) -> void:
 	use_state()
@@ -48,7 +52,6 @@ func _physics_process(delta) -> void:
 func click_to_move() -> void:
 	if Input.is_action_pressed("right_click"):
 		set_destination(get_global_mouse_position())
-		
 
 func despawn() -> void:
 	set_process(false)
@@ -78,25 +81,26 @@ func clear_footprint():
 		node.queue_free()
 		
 
-func set_footprint(value: String) -> void:
-	footprint = value
+func set_polygon(value: String) -> void:
+	polygon = value
 
-func build_footprint() -> void:
+@rpc("any_peer", "call_local", "reliable")
+func build_polygon(polygon_key: String) -> void:
 	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	var footprint_data = campaign_controller.get_Polygon(footprint)
-	var polygon: CollisionPolygon2D = CollisionPolygon2D.new()
+	var polygon_data = campaign_controller.get_Polygon(polygon_key)
+	var collision_polygon: CollisionPolygon2D = CollisionPolygon2D.new()
 	var vector_array: PackedVector2Array = []
-	for vertex_key in footprint_data.get("vertices", []):
+	for vertex_key in polygon_data.get("vertices", []):
 		var vertex: Dictionary = campaign_controller.get_Vertex(vertex_key)
 		vector_array.append(Vector2i(vertex.get("x"), vertex.get("y")))
-	polygon.set_polygon(vector_array)
+	collision_polygon.set_polygon(vector_array)
 	var polygon_name: String = "FootprintPolygon"
 	var existing_polygon = get_node_or_null(polygon_name)
 	if existing_polygon != null:
 		existing_polygon.queue_free()
 		remove_child(existing_polygon)
-	polygon.set_name(polygon_name)
-	add_child(polygon)
+	collision_polygon.set_name(polygon_name)
+	add_child(collision_polygon)
 
 
 func set_peer_id(value) -> void:
@@ -185,11 +189,15 @@ func build_sprite(sprite_key: String) -> Result:
 							sprite_data.get("src", Settings.MISSING_VALUE),
 						)
 					);
+		_handle_sprite_config.call_deferred(sprite_data, sprite_frames)
+	return Result.ok(OK)
+	
+func _handle_sprite_config(sprite_data: Dictionary, sprite_frames: SpriteFrames) -> void:
+		## Setting up a sprite sheet dynamically is a touchy thing. It must be started in this order.
 		$Sprite.offset = _calculate_sprite_offset(sprite_data)
 		$Sprite.set_sprite_frames(sprite_frames)
 		$Sprite.set_animation("default")
-	return Result.ok(OK)
-	
+
 func _calculate_sprite_offset(sprite_data: Dictionary) -> Vector2i:
 	var full_size: Vector2i = get_sprite_size(sprite_data)
 	var margin: Vector2i = get_sprite_margin(sprite_data)
@@ -301,6 +309,13 @@ func set_polygons(disabled: bool) -> void:
 
 
 func _on_multiplayer_synchronizer_synchronized():
-	if _previous_sprite != sprite:
+	if sprite != "" and _previous_sprite != sprite:
 		_previous_sprite = sprite
-		build_sprite(sprite)
+		rpc("build_sprite", sprite)
+	if polygon != "" and _previous_polygon != polygon:
+		_previous_polygon = polygon
+		rpc("build_polygon", polygon)
+
+
+func _on_sprite_animation_changed():
+	$Sprite.play()

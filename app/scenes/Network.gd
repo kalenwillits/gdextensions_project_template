@@ -72,7 +72,7 @@ func establish_server(uri: String = "*", port: int = 5000, max_clients: int = Se
 	multiplayer.set_multiplayer_peer(peer)
 	multiplayer.peer_connected.connect(func(peer_id): peer_connected.emit(peer_id))
 	multiplayer.peer_disconnected.connect(func(peer_id): peer_disconnected.emit(peer_id))
-	server_established.emit()
+	_defer_signal(func(): server_established.emit())
 
 func establish_client(uri: String = "localhost", port: int = 5000):
 	# Create client that connects to a server at uri using specified port.
@@ -84,7 +84,7 @@ func establish_client(uri: String = "localhost", port: int = 5000):
 	multiplayer.connected_to_server.connect(func(): connected_to_server.emit())
 	multiplayer.connection_failed.connect(func(): connection_failed.emit())
 	multiplayer.server_disconnected.connect(func(): server_disconnected.emit())
-	client_established.emit()
+	_defer_signal(func(): client_established.emit())
 	
 func unestablish():
 	multiplayer.set_multiplayer_peer(null)
@@ -108,3 +108,6 @@ func _on_peer_disconnected(peer_id):
 
 func _on_server_disconnected():
 	Console.println("Server disconnected.")
+	
+func _defer_signal(function) -> void:
+	function.call_deferred()
