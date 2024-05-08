@@ -1,14 +1,12 @@
 extends TileMap
-# TODO - THis code is COMPLEX!!! break it up
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	add_to_group(Settings.TILEMAP_NODE_GROUP) # TODO - does nothing until refactor
-	pass # Replace with function body.
 
-func build(CampaignController: Node) -> TileMap:  # TODO - we can now assume that this is the tilemap node and we don't need to return another one
+func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - we can now assume that this is the tilemap node and we don't need to return another one
 	#var Campaign: Node = get_node(campaign_controller)
-	var map_data: Dictionary = CampaignController.get_TileMap(Cache.tilemap)
+	var map_data: Dictionary = CampaignController.get_TileMap(tilemap_key)
 	var tileset_cols: int = 1
 	var tilemap: TileMap = TileMap.new()  # TODO - use packed scene
 	tilemap.y_sort_enabled = true
@@ -23,7 +21,7 @@ func build(CampaignController: Node) -> TileMap:  # TODO - we can now assume tha
 	var atlas: TileSetAtlasSource = TileSetAtlasSource.new()
 	var tileset_key = map_data.get("tileset")
 	var tileset_data = CampaignController.get_TileSet(tileset_key)
-	atlas.set_texture(io.load_asset(tileset_data.get("texture")).unwrap())
+	io.load_asset(Cache.campaign + tileset_data.get("texture")).then(func(texture): atlas.set_texture(texture)).catch(func(): push_error("Failed to load atlas texture"))
 	atlas.set_texture_region_size(Settings.TILESET_TILESIZE)
 	tileset.add_source(atlas)
 	tileset.set_tile_size(Settings.TILEMAP_TILESIZE)
@@ -51,7 +49,7 @@ func build(CampaignController: Node) -> TileMap:  # TODO - we can now assume tha
 	for layer_key in map_data.get("layers", []):
 		var layer_data: Dictionary = CampaignController.get_Layer(layer_key)
 		if layer_data != null:
-			var layer_string: String = io.load_asset(layer_data.get("source")).unwrap()
+			var layer_string: String = io.load_asset(Cache.campaign + layer_data.get("source")).unwrap()
 			tilemap.add_layer(layer_index)
 			var ysort: bool = layer_data.get("ysort", bool(layer_index)) # Usually, the ground layer is not sorted and the rgest of them are. 
 			tilemap.set_layer_y_sort_enabled(layer_index, layer_data.get("ysort", ysort))

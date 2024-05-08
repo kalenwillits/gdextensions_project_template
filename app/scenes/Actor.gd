@@ -120,7 +120,7 @@ func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	if Cache.textures.has(source):
 		external_texture = Cache.textures[source]
 	else:
-		Cache.textures[source] = io.load_asset(source).unwrap_or_else(func(): push_error("Unable to load texture."))
+		Cache.textures[source] = io.load_asset(Cache.campaign + source).unwrap_or_else(func(): push_error("Unable to load texture."))
 	var columns: int = external_texture.get_width() / size.x
 	texture = AtlasTexture.new()
 	texture.set_atlas(external_texture)
@@ -160,7 +160,7 @@ func build_sprite(sprite_key: String) -> Result:
 	if src == null: return
 	if !Cache.textures.get(src):
 		io\
-		.load_asset(src)\
+		.load_asset(Cache.campaign + src)\
 		.then(func(texture): Cache.textures[src] = texture; return OK)\
 		.catch(func(_err): push_error("error loading texture %s" % src))
 		

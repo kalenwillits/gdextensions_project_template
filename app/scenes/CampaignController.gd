@@ -1,5 +1,7 @@
 extends Node
 
+signal loaded
+
 var data: Dictionary = {
 	"Main": {},
 	"Actor": {},
@@ -13,7 +15,8 @@ var data: Dictionary = {
 	"Deployment": {},
 	"Sprite": {},
 	"Animation": {},
-	"Resource": {}
+	"Resource": {},
+	"Scene": {},
 }
 
 func _ready() -> void:
@@ -62,6 +65,9 @@ func get_Animation(objkey: String) -> Dictionary:
 func get_Resource(objkey: String) -> Dictionary:
 	return data.get("Resource", {}).get(objkey, {})
 	
+func get_Scene(objkey: String) -> Dictionary:
+	return data.get("Scene", {}).get(objkey, {})
+	
 func add_obj(objdata: Dictionary) -> Result:
 	for objtype in objdata.keys():
 		if typeof(objdata[objtype]) == TYPE_DICTIONARY:
@@ -89,15 +95,15 @@ func load_campaign() -> Result:
 				.load_asset(key)\
 				.then(func(o): return add_obj(o))\
 				.catch(func(_o): Console.println("Unable to load asset %s" % key))
+		loaded.emit()
 		return Result.ok(OK)
 	return Result.fail(FAILED)
 	
 @rpc("authority", "reliable")
-func spawn_tilemap(campaign: String, tilemap: String) -> void:
+func spawn_tilemap(campaign: String, tilemap_key: String) -> void:
 	Cache.campaign = campaign
-	Cache.tilemap = tilemap
 	if load_campaign().is_ok():
-		var isometric_tilemap: TileMap = Scene.IsometricTileMap.instantiate().build(self)
+		var isometric_tilemap: TileMap = Scene.IsometricTileMap.instantiate().build(self, tilemap_key)
 		get_parent().add_child(isometric_tilemap)
 	else:
 		push_error("FAILED TO LOAD CAMPAIGN")

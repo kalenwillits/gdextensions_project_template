@@ -61,7 +61,7 @@ func build_frame(index: int, columns: int, size: Vector2i, source: String) -> At
 	if Cache.textures.has(source):
 		external_texture = Cache.textures[source]
 	else:
-		Cache.textures[source] = io.load_asset(source).unwrap_or_else(func(): push_error("Unable to load texture."))
+		Cache.textures[source] = io.load_asset(Cache.campaign + source).unwrap_or_else(func(): push_error("Unable to load texture."))
 	texture = AtlasTexture.new()
 	texture.set_atlas(external_texture)
 	texture.set_region(std.get_region(index, columns, size))

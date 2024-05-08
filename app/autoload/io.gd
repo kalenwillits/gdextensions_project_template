@@ -41,7 +41,6 @@ func get_dir() -> String:
 	return "/".join(path_arr.slice(0, -1)) + "/"
 
 func load_asset(key: String, flag: int = 0) -> Result:
-	# TODO - 100% refactor the way tile maps are written
 	var archive := ZIPReader.new()
 	var err := archive.open(get_dir() + Settings.CAMPAIGNS_DIR + "/" + Cache.campaign + ".zip")
 	if err != OK:

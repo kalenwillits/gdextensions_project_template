@@ -15,6 +15,7 @@ const ISOMETRIC_RATIO: float = 2.0
 const NORTH_RADIANS: float = PI / 2.0
 
 const CAMPAIGNS_DIR: String = "campaigns/"
+const PROFILES_DIR: String = "profiles/"
 
 const KWARGS_DELIMITER: String = "="
 const HIDDEN_CHAR: String = "*"
@@ -56,6 +57,8 @@ const DESTINATION_PRECISION: float = 0.9999
 const DEFAULT_PORT: int = 5000
 const DEFAULT_URI: String = "127.0.0.1"
 const DEFAULT_MAX_NUM_CLIENTS: int = 128
+const DEFAULT_PROFILE: String = "default"
+const DEFAULT_CAMPAIGN: String = "default"
 
 const BASE_ACTOR_SPEED: float = 10.0
 

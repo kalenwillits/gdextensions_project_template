@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://csvc3usq2h3o1"]
+
+[ext_resource type="Script" path="res://scenes/Profile.gd" id="1_5ex3x"]
+
+[node name="Profile" type="Node"]
+script = ExtResource("1_5ex3x")
+
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
