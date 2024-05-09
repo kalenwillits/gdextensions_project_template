@@ -7,8 +7,8 @@ const SPEED_NORMAL: float = 700.0
 @export var speed_mod: float = 1.0
 @export var heading: String = Settings.DEFAULT_HEADING 
 @export var state: String = "idle"
-@export var sprite: String
-@export var polygon: String
+@export var sprite: String = ""
+@export var polygon: String = ""
 
 var peer_id: int = 0
 var _ticks: float = 0.0
@@ -38,12 +38,14 @@ func _ready() -> void:
 	$Sprite.set_sprite_frames(SpriteFrames.new())
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
-	get_tree().create_timer(0.01).timeout.connect(func(): build_polygon(polygon))
-	get_tree().create_timer(0.01).timeout.connect(func(): build_sprite(sprite))
+	get_tree().create_timer(0.1).timeout.connect(handle_polygon_change)
+	get_tree().create_timer(0.1).timeout.connect(handle_sprite_change)
 	
 func _physics_process(delta) -> void:
 	use_state()
 	use_animation()
+	handle_sprite_change()
+	handle_polygon_change()
 	if is_multiplayer_authority():
 		use_movement(delta)
 		click_to_move()
@@ -307,11 +309,13 @@ func set_polygons(disabled: bool) -> void:
 		if node.is_class("CollisionPolygon2D"):
 			node.disabled = disabled
 
-func _on_multiplayer_synchronizer_synchronized():
+func handle_sprite_change():
 	if sprite != "" and _previous_sprite != sprite:
 		_previous_sprite = sprite
 		rpc("build_sprite", sprite)
-	if polygon != "" and _previous_polygon != polygon:
+	
+func handle_polygon_change():
+	if sprite != "" and _previous_polygon != polygon:
 		_previous_polygon = polygon
 		rpc("build_polygon", polygon)
 

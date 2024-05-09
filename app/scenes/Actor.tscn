@@ -58,4 +58,3 @@ replication_config = SubResource("SceneReplicationConfig_bd4xq")
 [connection signal="ready" from="Sprite" to="." method="_on_sprite_ready"]
 [connection signal="ready" from="Label" to="." method="_on_label_ready"]
 [connection signal="body_entered" from="HitBox" to="." method="_on_hit_box_body_entered"]
-[connection signal="synchronized" from="MultiplayerSynchronizer" to="." method="_on_multiplayer_synchronizer_synchronized"]

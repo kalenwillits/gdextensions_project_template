@@ -22,13 +22,12 @@ func use_server_established() -> void:
 	var data: Dictionary = profile.to_dict()
 	data["peer_id"] = network.multiplayer.get_unique_id()
 	sync_actor(data)
-	#use_establish_network()
 
 func use_client_established() -> void:
 	var data: Dictionary = profile.to_dict()
 	data["peer_id"] = network.multiplayer.get_unique_id()
-	get_tree().create_timer(0.1).timeout.connect(func(): rpc_id(1, "sync_actor", data))
-	
+	#get_tree().create_timer(0.1).timeout.connect(func(): rpc("sync_actor", data))
+	sync_actor(data)
 
 func use_peer_connected(peer_id: int) -> void:
 	campaign_controller.rpc_id(peer_id, "spawn_tilemap", Cache.campaign, "baseTileMap")
