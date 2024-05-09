@@ -307,7 +307,6 @@ func set_polygons(disabled: bool) -> void:
 		if node.is_class("CollisionPolygon2D"):
 			node.disabled = disabled
 
-
 func _on_multiplayer_synchronizer_synchronized():
 	if sprite != "" and _previous_sprite != sprite:
 		_previous_sprite = sprite

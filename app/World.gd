@@ -7,12 +7,11 @@ extends Node2D
 
 
 func _ready() -> void:
-	network.connect("server_established", use_server_established)
-	network.connect("peer_connected", use_peer_connected)
-	network.connect(
-		"client_established", 
-		use_client_established
-	)
+	network.server_established.connect(use_server_established)
+	network.peer_connected.connect(use_peer_connected)
+	network.client_established.connect(use_client_established)
+	network.peer_disconnected.connect(use_peer_disconnected)
+	network.server_disconnected.connect(use_server_disconnected)
 	campaign_controller.ready.connect(func(): add_child(profile))
 	add_child(campaign_controller)
 	add_child(camera)
@@ -33,6 +32,14 @@ func use_client_established() -> void:
 
 func use_peer_connected(peer_id: int) -> void:
 	campaign_controller.rpc_id(peer_id, "spawn_tilemap", Cache.campaign, "baseTileMap")
+	
+func use_peer_disconnected(peer_id: int) -> void:
+	var actor = get_node_or_null(str(peer_id))
+	if actor != null:
+		actor.queue_free()
+		
+func use_server_disconnected() -> void:
+	pass
 
 @rpc("call_local", "any_peer", "reliable")
 func sync_actor(data: Dictionary) -> void:
