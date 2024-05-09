@@ -88,12 +88,11 @@ func set_polygon(value: String) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func build_polygon(polygon_key: String) -> void:
-	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	var polygon_data = campaign_controller.get_Polygon(polygon_key)
+	var polygon_data = Campaign.get_Polygon(polygon_key)
 	var collision_polygon: CollisionPolygon2D = CollisionPolygon2D.new()
 	var vector_array: PackedVector2Array = []
 	for vertex_key in polygon_data.get("vertices", []):
-		var vertex: Dictionary = campaign_controller.get_Vertex(vertex_key)
+		var vertex: Dictionary = Campaign.get_Vertex(vertex_key)
 		vector_array.append(Vector2i(vertex.get("x"), vertex.get("y")))
 	collision_polygon.set_polygon(vector_array)
 	var polygon_name: String = "FootprintPolygon"
@@ -138,8 +137,7 @@ func get_sprite_size(sprite_data: Dictionary) -> Vector2i:
 	var sprite_size_x: int = Settings.DEFAULT_SPRITE_SIZE_X
 	var sprite_size_y: int = Settings.DEFAULT_SPRITE_SIZE_Y
 	if sprite_data.get("size") != null:
-		var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-		var sprite_size_vertex = campaign_controller.get_Vertex(sprite_data["size"])
+		var sprite_size_vertex = Campaign.get_Vertex(sprite_data["size"])
 		if sprite_size_vertex.get("x") != null:
 			sprite_size_x = sprite_size_vertex["x"]
 		if sprite_size_vertex.get("y") != null:
@@ -150,8 +148,7 @@ func get_sprite_margin(sprite_data: Dictionary) -> Vector2i:
 	var sprite_margin_x: int = Settings.DEFAULT_SPRITE_MARGIN_X
 	var sprite_margin_y: int = Settings.DEFAULT_SPRITE_MARGIN_Y
 	if sprite_data.get("margin") != null:
-		var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-		var sprite_margin_vertex = campaign_controller.get_Vertex(sprite_data["margin"])
+		var sprite_margin_vertex = Campaign.get_Vertex(sprite_data["margin"])
 		if sprite_margin_vertex.get("x") != null:
 			sprite_margin_x = sprite_margin_vertex["x"]
 		if sprite_margin_vertex.get("y") != null:
@@ -160,8 +157,7 @@ func get_sprite_margin(sprite_data: Dictionary) -> Vector2i:
 
 @rpc("any_peer", "call_local", "reliable")
 func build_sprite(sprite_key: String) -> Result:
-	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	var sprite_data = campaign_controller.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
+	var sprite_data = Campaign.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
 	var src = sprite_data.get("src")
 	if src == null: return
 	if !Cache.textures.get(src):
@@ -174,7 +170,7 @@ func build_sprite(sprite_key: String) -> Result:
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
 	if texture != null:
 		var animation_key: String = sprite_data.get("animation")
-		var animation: Dictionary = campaign_controller.get_Animation(animation_key)
+		var animation: Dictionary = Campaign.get_Animation(animation_key)
 		for animation_name in animation.keys():
 			for radial in animation[animation_name].keys():
 				var animation_radial_name: String = "%s:%s" % [animation_name, radial]

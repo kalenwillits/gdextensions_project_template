@@ -24,6 +24,7 @@ io="*res://autoload/io.gd"
 Scene="*res://autoload/Scene.gd"
 Route="*res://autoload/Route.gd"
 std="*res://autoload/std.gd"
+Campaign="*res://autoload/Campaign.tscn"
 
 [debug]
 

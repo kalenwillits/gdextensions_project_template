@@ -5,8 +5,7 @@ func _ready():
 	add_to_group(Settings.TILEMAP_NODE_GROUP) # TODO - does nothing until refactor
 
 func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - we can now assume that this is the tilemap node and we don't need to return another one
-	#var Campaign: Node = get_node(campaign_controller)
-	var map_data: Dictionary = CampaignController.get_TileMap(tilemap_key)
+	var map_data: Dictionary = Campaign.get_TileMap(tilemap_key)
 	var tileset_cols: int = 1
 	var tilemap: TileMap = TileMap.new()  # TODO - use packed scene
 	tilemap.y_sort_enabled = true
@@ -20,13 +19,13 @@ func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - 
 	tileset.set_physics_layer_collision_layer(0, 4)  # set the second int as value, not bit or index.
 	var atlas: TileSetAtlasSource = TileSetAtlasSource.new()
 	var tileset_key = map_data.get("tileset")
-	var tileset_data = CampaignController.get_TileSet(tileset_key)
+	var tileset_data = Campaign.get_TileSet(tileset_key)
 	io.load_asset(Cache.campaign + tileset_data.get("texture")).then(func(texture): atlas.set_texture(texture)).catch(func(): push_error("Failed to load atlas texture"))
 	atlas.set_texture_region_size(Settings.TILESET_TILESIZE)
 	tileset.add_source(atlas)
 	tileset.set_tile_size(Settings.TILEMAP_TILESIZE)
 	for tile_key in tileset_data.get("tiles", []):
-		var tile_data: Dictionary = CampaignController.get_Tile(tile_key)
+		var tile_data: Dictionary = Campaign.get_Tile(tile_key)
 		tileset_cols = tileset_data.get("columns", 1)
 		var tile_index: int = int(tile_data.get("index", 0))
 		var coords = Vector2i(tile_index % tileset_cols, tile_index / tileset_cols)
@@ -37,17 +36,17 @@ func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - 
 		if tile_data.get("polygon") != null:
 			var polygon_key = tile_data.get("polygon")
 			if polygon_key != null:
-				var polygon: Dictionary = CampaignController.get_Polygon(polygon_key)
+				var polygon: Dictionary = Campaign.get_Polygon(polygon_key)
 				if polygon != null:
 					var vectors: PackedVector2Array = []
 					for vertex_key in polygon.get("vertices", []):
-						var vertex = CampaignController.get_Vertex(vertex_key)
+						var vertex = Campaign.get_Vertex(vertex_key)
 						vectors.append(std.vec2i_from(vertex))
 					atlas_tile.set("physics_layer_0/polygon_0/points", vectors)
 		tilemap.tile_set = tileset
 	var layer_index: int = 0
 	for layer_key in map_data.get("layers", []):
-		var layer_data: Dictionary = CampaignController.get_Layer(layer_key)
+		var layer_data: Dictionary = Campaign.get_Layer(layer_key)
 		if layer_data != null:
 			var layer_string: String = io.load_asset(Cache.campaign + layer_data.get("source")).unwrap()
 			tilemap.add_layer(layer_index)
@@ -75,10 +74,10 @@ func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - 
 
 
 func lookup_tile_by_char(CampaignController: Node, tileset_key: String, tile_char):
-	var tileset_data = CampaignController.get_TileSet(tileset_key)
+	var tileset_data = Campaign.get_TileSet(tileset_key)
 	if tileset_data != null:
-		for tile_key in CampaignController.data.Tile.keys():
-			var tile_data = CampaignController.get_Tile(tile_key)
+		for tile_key in Campaign.data.Tile.keys():
+			var tile_data = Campaign.get_Tile(tile_key)
 			if tile_data != null:
 				if tile_data.get("char") == tile_char and tile_key in tileset_data.get("tiles", []):
 					return tile_data

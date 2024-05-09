@@ -19,9 +19,6 @@ var data: Dictionary = {
 	"Scene": {},
 }
 
-func _ready() -> void:
-	add_to_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-
 func reset() -> void:
 	for key in data.keys():
 		data[key].clear()
@@ -82,7 +79,7 @@ func add_obj(objdata: Dictionary) -> Result:
 							Console.println("Unable to place object type [%s] from campaign. Typo in content creation?" % objtype)
 	return Result.ok(OK)
 	
-func load_campaign() -> Result:
+func load_from_archive() -> Result:
 	var archive: ZIPReader = ZIPReader.new()
 	var campaign_path: String = io.get_dir() + Settings.CAMPAIGNS_DIR + Cache.campaign + ".zip"
 	if archive.open(campaign_path) == OK:	
@@ -98,15 +95,15 @@ func load_campaign() -> Result:
 		loaded.emit()
 		return Result.ok(OK)
 	return Result.fail(FAILED)
-	
-@rpc("authority", "reliable")
-func spawn_tilemap(campaign: String, tilemap_key: String) -> void:
-	Cache.campaign = campaign
-	if load_campaign().is_ok():
-		var isometric_tilemap: TileMap = Scene.IsometricTileMap.instantiate().build(self, tilemap_key)
-		get_parent().add_child(isometric_tilemap)
-	else:
-		push_error("FAILED TO LOAD CAMPAIGN")
+	#
+#@rpc("authority", "reliable")
+#func spawn_tilemap(campaign: String, tilemap_key: String) -> void:
+	#Cache.campaign = campaign
+	#if load_campaign().is_ok():
+		#var isometric_tilemap: TileMap = Scene.IsometricTileMap.instantiate().build(self, tilemap_key)
+		#get_parent().add_child(isometric_tilemap)
+	#else:
+		#push_error("FAILED TO LOAD CAMPAIGN")
 	
 #func plant_tilemap_seed(campaign_name: String):
 	#var seed = Scene.TileMapSeed.instantiate()
