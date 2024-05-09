@@ -53,7 +53,8 @@ func sync_actor(data: Dictionary) -> void:
 	actor.set_name(str(data["peer_id"]))
 	actor.set_sprite(actor_data["sprite"])
 	actor.set_polygon(actor_data["polygon"])
-	add_child(actor)
+	if !has_node(str(data["peer_id"])):
+		add_child(actor)
 
 func _get_or_spawn_actor(peer_id: int) -> CharacterBody2D:
 	var actor = get_node_or_null(str(peer_id))

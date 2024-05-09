@@ -38,8 +38,6 @@ func _ready() -> void:
 	$Sprite.set_sprite_frames(SpriteFrames.new())
 	if is_multiplayer_authority():
 		get_tree().get_first_node_in_group(Settings.CAMERA_GROUP).set_target(self)
-	get_tree().create_timer(0.1).timeout.connect(handle_polygon_change)
-	get_tree().create_timer(0.1).timeout.connect(handle_sprite_change)
 	
 func _physics_process(delta) -> void:
 	use_state()
@@ -86,7 +84,6 @@ func clear_footprint():
 func set_polygon(value: String) -> void:
 	polygon = value
 
-@rpc("any_peer", "call_local", "reliable")
 func build_polygon(polygon_key: String) -> void:
 	var polygon_data = Campaign.get_Polygon(polygon_key)
 	var collision_polygon: CollisionPolygon2D = CollisionPolygon2D.new()
@@ -308,13 +305,17 @@ func set_polygons(disabled: bool) -> void:
 func handle_sprite_change():
 	if sprite != "" and _previous_sprite != sprite:
 		_previous_sprite = sprite
-		rpc("build_sprite", sprite)
+		build_sprite(sprite)
 	
 func handle_polygon_change():
 	if sprite != "" and _previous_polygon != polygon:
 		_previous_polygon = polygon
-		rpc("build_polygon", polygon)
+		build_polygon(polygon)
 
 
 func _on_sprite_animation_changed():
 	$Sprite.play()
+
+
+func _on_multiplayer_synchronizer_synchronized():
+	pass # Replace with function body.
