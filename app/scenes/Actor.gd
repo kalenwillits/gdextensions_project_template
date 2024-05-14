@@ -122,7 +122,7 @@ func build_frame(index: int, size: Vector2i, source: String) -> AtlasTexture:
 	if Cache.textures.has(source):
 		external_texture = Cache.textures[source]
 	else:
-		Cache.textures[source] = io.load_asset(Cache.campaign + source).unwrap_or_else(func(): push_error("Unable to load texture."))
+		Cache.textures[source] = io.load_asset(Cache.campaign + source).unwrap()
 	var columns: int = external_texture.get_width() / size.x
 	texture = AtlasTexture.new()
 	texture.set_atlas(external_texture)
@@ -155,7 +155,7 @@ func get_sprite_margin(sprite_data: Dictionary) -> Vector2i:
 @rpc("any_peer", "call_local", "reliable")
 func build_sprite(sprite_key: String) -> Result:
 	var sprite_data = Campaign.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
-	var spritesheet = sprite_data.get("spritesheet")
+	var spritesheet = sprite_data.get("texture")
 	if spritesheet == null: return
 	if !Cache.textures.get(spritesheet):
 		io\
@@ -171,8 +171,8 @@ func build_sprite(sprite_key: String) -> Result:
 		for animation_name in animation.keys():
 			for radial in animation[animation_name].keys():
 				var animation_radial_name: String = "%s:%s" % [animation_name, radial]
-				if animation_radial_name.contains("default"):
-					animation_radial_name = "default"  ## TODO WTF is this and why?
+				if animation_radial_name == "_":
+					animation_radial_name = "default"
 				else:
 					sprite_frames.add_animation(animation_radial_name)
 				for frame in animation[animation_name][radial]:
@@ -181,7 +181,7 @@ func build_sprite(sprite_key: String) -> Result:
 						build_frame(
 							frame,
 							get_sprite_size(sprite_data),
-							sprite_data.get("spritesheet", Settings.MISSING_VALUE),
+							sprite_data.get("texture"),
 						)
 					);
 		_handle_sprite_config.call_deferred(sprite_data, sprite_frames)
