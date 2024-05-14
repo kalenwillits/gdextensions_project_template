@@ -155,15 +155,15 @@ func get_sprite_margin(sprite_data: Dictionary) -> Vector2i:
 @rpc("any_peer", "call_local", "reliable")
 func build_sprite(sprite_key: String) -> Result:
 	var sprite_data = Campaign.get_Sprite(sprite_key)# TODO -> Create a sprite mapper/builder that pulls this out of campaign
-	var src = sprite_data.get("src")
-	if src == null: return
-	if !Cache.textures.get(src):
+	var spritesheet = sprite_data.get("spritesheet")
+	if spritesheet == null: return
+	if !Cache.textures.get(spritesheet):
 		io\
-		.load_asset(Cache.campaign + src)\
-		.then(func(texture): Cache.textures[src] = texture; return OK)\
-		.catch(func(_err): push_error("error loading texture %s" % src))
+		.load_asset(Cache.campaign + spritesheet)\
+		.then(func(texture): Cache.textures[spritesheet] = texture; return OK)\
+		.catch(func(_err): push_error("error loading texture %s" % spritesheet))
 		
-	var texture = Cache.textures.get(src)
+	var texture = Cache.textures.get(spritesheet)
 	var sprite_frames: SpriteFrames = SpriteFrames.new()
 	if texture != null:
 		var animation_key: String = sprite_data.get("animation")
@@ -181,7 +181,7 @@ func build_sprite(sprite_key: String) -> Result:
 						build_frame(
 							frame,
 							get_sprite_size(sprite_data),
-							sprite_data.get("src", Settings.MISSING_VALUE),
+							sprite_data.get("spritesheet", Settings.MISSING_VALUE),
 						)
 					);
 		_handle_sprite_config.call_deferred(sprite_data, sprite_frames)
