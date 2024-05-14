@@ -16,7 +16,7 @@ func build(CampaignController: Node, tilemap_key: String) -> TileMap:  # TODO - 
 	tileset.set_tile_layout(Settings.TILESET_LAYOUT)
 	tileset.set_tile_offset_axis(Settings.TILESET_OFFSET_AXIS)
 	tileset.add_physics_layer()
-	tileset.set_physics_layer_collision_layer(0, 4)  # set the second int as value, not bit or index.
+	tileset.set_physics_layer_collision_layer(0, Settings.COLLISION_LAYER_WALL)  # set the second int as value, not bit or index.
 	var atlas: TileSetAtlasSource = TileSetAtlasSource.new()
 	var tileset_key = map_data.get("tileset")
 	var tileset_data = Campaign.get_TileSet(tileset_key)

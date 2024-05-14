@@ -78,6 +78,11 @@ camera_lock={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="ACTOR"
+2d_physics/layer_2="WALL"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

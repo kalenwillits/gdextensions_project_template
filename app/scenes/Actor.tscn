@@ -30,6 +30,7 @@ properties/7/replication_mode = 2
 
 [node name="Actor" type="CharacterBody2D"]
 y_sort_enabled = true
+collision_mask = 3
 script = ExtResource("1_c0co2")
 
 [node name="Actions" type="Node" parent="."]
