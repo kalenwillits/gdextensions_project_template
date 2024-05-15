@@ -26,14 +26,15 @@ func save() -> void:
 	io.save_json(Settings.PROFILES_DIR + Cache.profile, to_dict())
 
 func _generate_default_profile(profile_name: String) -> Dictionary:
-	var campaign_controller = get_tree().get_first_node_in_group(Settings.CAMPAIGN_CONTROLLER_GROUP)
-	var maindata: Dictionary = campaign_controller.get_Main()
+	var maindata: Dictionary = Campaign.get_Main()
 	return {
 		"actor": maindata["actor"],
 		"scene": maindata["scene"],
 		"name": profile_name,
 	}
 
+func get_active_scene() -> String:
+	return _scene
 	
 func from_actor(actor: Node):
 	pass # TODO

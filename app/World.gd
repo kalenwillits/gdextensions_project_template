@@ -25,7 +25,8 @@ func spawn_tilemap(campaign: String, tilemap_key: String) -> void:
 	add_child(isometric_tilemap)
 
 func use_server_established() -> void:
-	spawn_tilemap(Cache.campaign, "baseTileMap")
+	var active_scene: Dictionary = Campaign.get_Scene(profile.get_active_scene())
+	spawn_tilemap(Cache.campaign, active_scene["tilemap"])
 	var data: Dictionary = profile.to_dict()
 	data["peer_id"] = network.multiplayer.get_unique_id()
 	sync_actor(data)
