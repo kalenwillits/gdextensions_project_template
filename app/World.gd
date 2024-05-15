@@ -26,8 +26,9 @@ func spawn_tilemap(campaign: String, tilemap_key: String) -> void:
 	
 func populate_scene(scene_data: Dictionary) -> void:
 	for deployment_key in scene_data.get("deployments", []):
-		pass # TODO
-		#var actor_data = 
+		var deployment_data: Dictionary = Campaign.get_Deployment(deployment_key)
+		var coordinates: Vector2 = std.vec2_from(Campaign.get_Vertex(deployment_data["coordinates"]))
+		spawn_actor({"actor": deployment_data["actor"], "peer_id": 0}, coordinates)
 
 func use_server_established() -> void:
 	var active_scene: Dictionary = Campaign.get_Scene(profile.active_scene())
@@ -62,7 +63,7 @@ func spawn_actor(data: Dictionary, coordinates: Vector2) -> void:
 	actor.set_sprite(actor_data["sprite"])
 	actor.set_polygon(actor_data["polygon"])
 	actor.move(coordinates)
-	if !has_node(str(data["peer_id"])):
+	if !has_node(str(data.get("peer_id", 0))):
 		add_child(actor)
 
 func _get_or_create_actor(peer_id: int) -> CharacterBody2D:
