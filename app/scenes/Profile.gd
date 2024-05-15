@@ -33,7 +33,7 @@ func _generate_default_profile(profile_name: String) -> Dictionary:
 		"name": profile_name,
 	}
 
-func get_active_scene() -> String:
+func active_scene() -> String:
 	return _scene
 	
 func from_actor(actor: Node):

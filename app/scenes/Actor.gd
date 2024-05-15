@@ -57,6 +57,12 @@ func despawn() -> void:
 	set_process(false)
 	set_physics_process(false)
 	queue_free()
+	
+
+func move(coordinates: Vector2) -> void:
+	set_position(coordinates)
+	origin = coordinates
+	destination = coordinates
 
 func _clear_on_touch_connections() -> void:
 	for sig in on_touch.get_connections():
