@@ -1,2 +1,0 @@
-- [ ] Items & Inventory System
-- [ ] Chat System
